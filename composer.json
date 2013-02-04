@@ -1,7 +1,8 @@
 {
     "name": "matycz/lemo-base",
-    "description": "Basic Module",
+    "description": "Module with basic classes",
     "type": "library",
+    "license": "BSD-3-Clause",
     "keywords": [
         "zf2",
         "lemo"
@@ -18,6 +19,7 @@
         "php": ">=5.3",
         "zendframework/zendframework": ">=2.1.0"
     },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
             "LemoBase": "src/"
