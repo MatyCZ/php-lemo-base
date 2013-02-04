@@ -1,0 +1,29 @@
+{
+    "name": "matycz/lemo-base",
+    "description": "Basic Module",
+    "type": "library",
+    "keywords": [
+        "zf2",
+        "lemo",
+    ],
+    "homepage": "https://github.com/MatyCZ/LemoCMS",
+    "authors": [
+        {
+            "name": "Matej Szendi",
+            "email": "matej.szendi@gmail.com",
+            "homepage": "http://lemo.cz/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "zendframework/zendframework": ">=2.1.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "LemoBase": "src/"
+        },
+        "classmap": [
+            "./Module.php"
+        ]
+    }
+}
