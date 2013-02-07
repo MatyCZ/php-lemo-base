@@ -3,6 +3,7 @@
 namespace LemoBase\Facade;
 
 use Doctrine\ORM\EntityManager;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 abstract class AbstractFacade
@@ -24,6 +25,33 @@ abstract class AbstractFacade
     {
         $this->entityManager =  $serviceManager->get('Doctrine\ORM\EntityManager');
         $this->serviceManager = $serviceManager;
+    }
+
+    /**
+     * Prevede entitu na pole
+     *
+     * @param object $entity
+     * @return array
+     */
+    public function extract($entity)
+    {
+        $hydrator = new DoctrineHydrator($this->getEntityManager(), get_class($entity));
+
+        return $hydrator->extract($entity);
+    }
+
+    /**
+     * Prevede pole na entitu
+     *
+     * @param  object $entity
+     * @param  array  $array
+     * @return object
+     */
+    public function hydrate($entity, array $array)
+    {
+        $hydrator = new DoctrineHydrator($this->getEntityManager(), get_class($entity));
+
+        return $hydrator->hydrate($array, $entity);
     }
 
     /**
