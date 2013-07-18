@@ -2,8 +2,8 @@
 
 namespace LemoBase\Mvc\Controller\Plugin;
 
-use Zend\Form\Form,
-    Zend\Mvc\Controller\Plugin\FlashMessenger;
+use Zend\Form\Form;
+use Zend\Mvc\Controller\Plugin\FlashMessenger;
 
 class Notice extends FlashMessenger
 {
@@ -46,25 +46,35 @@ class Notice extends FlashMessenger
 
         // Grab errors from subforms
         foreach($form->getFieldsets() as $fieldset) {
-            $elements = $fieldset->getElements();
-            foreach($fieldset->getInputFilter()->getMessages() as $errors) {
-                foreach($errors as $element => $fieldsetMessages) {
-                    if(isset($elements[$element])) {
-                        foreach($fieldsetMessages as $message) {
-                            $formError[$message][] = $elements[$element]->getLabel();
+            if ($fieldset instanceof Form) {
+                $elements = $fieldset->getElements();
+                $inputFilter = $fieldset->getInputFilter();
+
+                if (null !== $inputFilter) {
+                    foreach($inputFilter->getMessages() as $errors) {
+                        foreach($errors as $element => $fieldsetMessages) {
+                            if(isset($elements[$element])) {
+                                foreach($fieldsetMessages as $message) {
+                                    $formError[$message][] = $elements[$element]->getLabel();
+                                }
+                            }
                         }
                     }
                 }
+                unset($messages[$fieldset->getName()]);
             }
-            unset($messages[$fieldset->getName()]);
         }
 
         // Grab errors from form
         $elements = $form->getElements();
         foreach($messages as $element => $errors) {
             foreach($errors as $message) {
-                if(isset($elements[$element])) {
-                    $formError[$message][] = $this->getController()->getServiceLocator()->get('Zend\View\Renderer\PhpRenderer')->translate($elements[$element]->getLabel());
+                if(array_key_exists($element, $elements)) {
+                    if ('' != $elements[$element]->getLabel()) {
+                        $formError[$message][] = $this->getController()->getServiceLocator()->get('Zend\View\Renderer\PhpRenderer')->translate($elements[$element]->getLabel());
+                    } else {
+                        $formError[$message][] = $elements[$element]->getLabel();
+                    }
                 }
             }
         }
