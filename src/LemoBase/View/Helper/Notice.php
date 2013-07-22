@@ -91,8 +91,8 @@ class Notice extends AbstractHelper
 
             $script[] = "	$.notice({";
             $script[] = "		type: '" . $message['type'] . "',";
-            $script[] = "		title: '" . $message['title'] . "',";
-            $script[] = "		text: '" . str_replace("'", '`', $message['text']) . "'";
+            $script[] = "		title: '" . addslashes($message['title']) . "',";
+            $script[] = "		text: '" . addslashes(str_replace("'", '`', $message['text'])) . "'";
             $script[] = "	});";
         }
 
