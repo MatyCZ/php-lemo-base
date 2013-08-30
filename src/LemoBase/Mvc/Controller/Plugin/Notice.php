@@ -7,9 +7,9 @@ use Zend\Mvc\Controller\Plugin\FlashMessenger;
 
 class Notice extends FlashMessenger
 {
-    const ERROR       = 'error';
-    const ERROR_FORM  = 'error';
-    const INFORMATION = 'information';
+    const ERROR       = 'danger';
+    const ERROR_FORM  = 'danger';
+    const INFORMATION = 'info';
     const SUCCESS     = 'success';
     const WARNING     = 'warning';
 
@@ -148,7 +148,7 @@ class Notice extends FlashMessenger
      *
      * @param string $text
      * @param string|null $title
-     * @param error|information|success|warning $type
+     * @param danger|information|success|warning $type
      */
     protected function _addNotice($text, $title, $type)
     {
