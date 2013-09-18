@@ -80,12 +80,6 @@ class FormRenderRow extends AbstractHelper
             return '';
         }
 
-        // Required xhtml
-        $xhtmlRequired = '';
-        if(null !== $this->getForm()->getInputFilter() && true === $this->getForm()->getInputFilter()->has($firstElementName) && true === $this->getForm()->getInputFilter()->get($firstElementName)->isRequired()) {
-            $xhtmlRequired = '<em>*</em>';
-        }
-
         $groupClass = null;
         $lineClass = null;
         if(!empty($hideConditions)) {
@@ -116,18 +110,10 @@ class FormRenderRow extends AbstractHelper
             $groupClass .= ' input-append';
         }
 
-        $rowClass = null;
-        if(count($foundElements) > 1) {
-            $rowClass .= ' controls-row';
-        }
-
-        $this->getForm()->get($firstElementName)->setOptions(array_merge($this->getForm()->get($firstElementName)->getOptions(), array('label_attributes' => array('class' => 'control-label'))));
-
         $xhtml = array();
-        $xhtml[] = '<div class="control-line' . $lineClass . '" id="' . $lineName . '-line">';
-        $xhtml[] = '<div class="control-group' . $groupClass . '">';
-        $xhtml[] = '	' . str_replace('</label>', ':' . $xhtmlRequired . '</label>', $this->view->formLabel($this->getForm()->get($firstElementName)));
-        $xhtml[] = '	<div class="controls' . $rowClass . '">';
+        $xhtml[] = '<div class="form-group' . $lineClass . '' . $groupClass . '" id="form-group-' . $lineName . '">';
+        $xhtml[] = $this->view->formControlLabel($this->getForm()->get($firstElementName));
+        $xhtml[] = '<div class="col-lg-8">';
 
         // Render elements
         foreach($foundElements as $name => $attr)
@@ -178,7 +164,6 @@ class FormRenderRow extends AbstractHelper
             }
         }
 
-        $xhtml[] = '	</div>';
         $xhtml[] = '</div>';
         $xhtml[] = '</div>';
 
