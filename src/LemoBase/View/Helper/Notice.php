@@ -83,10 +83,7 @@ class Notice extends AbstractHelper
 
             if($this->_translate) {
                 $message['title'] = $this->getView()->translate($message['title']);
-
-                if(NoticeControllerPlugin::ERROR_FORM != $message['type']) {
-                    $message['text'] = $this->getView()->translate($message['text']);
-                }
+                $message['text'] = $this->getView()->translate($message['text']);
             }
 
             $script[] = "	$.notice({";
