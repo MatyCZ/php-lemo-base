@@ -6,6 +6,7 @@ use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ControllerPluginProviderInterface;
 use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
+use Zend\View\HelperPluginManager;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ControllerPluginProviderInterface, ViewHelperProviderInterface
 {
@@ -56,6 +57,18 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                 'notice'         => 'LemoBase\View\Helper\Notice',
                 'lang'           => 'LemoBase\View\Helper\Lang',
             ),
+            'factories' => array(
+                'routeMatch' => function(HelperPluginManager $helperPluginManager) {
+                    $match = $helperPluginManager->getServiceLocator()
+                        ->get('application')
+                        ->getMvcEvent()
+                        ->getRouteMatch();
+
+                    $helper = new View\Helper\RouteMatch();
+                    $helper->setRouteMatch($match);
+                    return $helper;
+                },
+            )
         );
     }
 }
