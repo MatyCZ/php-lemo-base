@@ -8,7 +8,11 @@ use Zend\ModuleManager\Feature\ControllerPluginProviderInterface;
 use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
 use Zend\View\HelperPluginManager;
 
-class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ControllerPluginProviderInterface, ViewHelperProviderInterface
+class Module implements
+    AutoloaderProviderInterface,
+    ConfigProviderInterface,
+    ControllerPluginProviderInterface,
+    ViewHelperProviderInterface
 {
     /**
      * @inheritdoc
@@ -51,8 +55,6 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
     {
         return array(
             'invokables' => array(
-                'formRenderRow'  => 'LemoBase\Form\View\Helper\FormRenderRow',
-                'formValidator'  => 'LemoBase\Form\View\Helper\FormValidator',
                 'paramsQuery'    => 'LemoBase\View\Helper\ParamsQuery',
                 'notice'         => 'LemoBase\View\Helper\Notice',
                 'lang'           => 'LemoBase\View\Helper\Lang',
