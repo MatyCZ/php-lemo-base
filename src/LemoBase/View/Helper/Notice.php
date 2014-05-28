@@ -85,9 +85,10 @@ class Notice extends AbstractHelper
                 $message['title'] = $this->getView()->translate($message['title']);
                 $message['text'] = $this->getView()->translate($message['text']);
             }
+
+            $xhtml[] = "Lemo_Alert.build('" .$message['type'] . "', '" .addslashes($message['title']) . "', '" .addslashes(str_replace("'", '`', $message['text'])) . "');";
         }
 
-        $xhtml[] = "Lemo_Alert.build('" .$message['type'] . "', '" .addslashes($message['title']) . "', '" .addslashes(str_replace("'", '`', $message['text'])) . "');";
         $xhtml[] = '</script>';
 
         return implode(PHP_EOL, $xhtml);
