@@ -65,6 +65,8 @@ class BankAccount extends AbstractValidator
         '8090' => 'Česká exportní banka, a.s.',
         '8150' => 'HSBC Bank plc - pobočka Praha',
         '8200' => 'PRIVAT BANK AG der Raiffeisenlandesbank Oberösterreich v České republice',
+        // Přidáno speciálně pro KÚPK, neexistující bankovní kód
+        '9999' => 'Fiktivní banka',
     );
 
     /**
@@ -72,8 +74,8 @@ class BankAccount extends AbstractValidator
      */
     protected $messageTemplates = array(
         self::INVALID_INPUT => 'Invalid input',
-        self::INVALID_ACCOUNT_PREFIX => 'Ivalid bank account prefix',
-        self::INVALID_ACCOUNT_NUMBER => 'Ivalid bank acoount main part',
+        self::INVALID_ACCOUNT_PREFIX => 'Invalid bank account prefix',
+        self::INVALID_ACCOUNT_NUMBER => 'Invalid bank account main part',
         self::INVALID_BANK_CODE => 'Invalid bank code',
     );
 
@@ -129,5 +131,20 @@ class BankAccount extends AbstractValidator
         }
 
         return true;
+    }
+
+    /**
+     * Vrátí název banky dle kódu, nebo prázdný string
+     *
+     * @param string $code
+     * @return string
+     */
+    public function getBankName($code)
+    {
+        if(empty($code) || !isset($this->bankCodes[$code])) {
+            return '';
+        }
+
+        return $this->bankCodes($code);
     }
 }
