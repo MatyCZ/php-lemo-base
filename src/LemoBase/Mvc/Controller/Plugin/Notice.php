@@ -144,6 +144,21 @@ class Notice extends FlashMessenger
     }
 
     /**
+     * Get messages that have been added to the current
+     * namespace within this request
+     *
+     * @return array
+     */
+    public function getCurrentMessagesAndClear()
+    {
+        $messages = $this->getCurrentMessages();
+
+        $this->clearCurrentMessages();
+
+        return $messages;
+    }
+
+    /**
      * Add new notice to the flashMessanger buffer
      *
      * @param string $text

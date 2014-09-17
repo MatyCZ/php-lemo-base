@@ -30,6 +30,13 @@ class Sanitize extends AbstractFilter
     protected $separator = '-';
 
     /**
+     * Convert to lower case
+     *
+     * @var bool
+     */
+    protected $lowercase = true;
+
+    /**
      * Sets the filter options
      * Allowed options are
      *     'encoding'   => Input character encoding
@@ -67,6 +74,10 @@ class Sanitize extends AbstractFilter
 
         if (array_key_exists('separator', $options)) {
             $this->setSeparator($options['separator']);
+        }
+
+        if (array_key_exists('lowercase', $options)) {
+            $this->setLowercase($options['lowercase']);
         }
     }
 
@@ -125,6 +136,10 @@ class Sanitize extends AbstractFilter
      */
     protected function convertToLowerCase($value)
     {
+        if(true !== $this->getLowercase()) {
+            return $value;
+        }
+
         $filter = new StringToLower();
         $filter->setEncoding($this->getEncoding());
 
@@ -139,7 +154,9 @@ class Sanitize extends AbstractFilter
      */
     protected function convertToLetterAndDigits($value)
     {
-        return preg_replace('~[^\\pL\d]+~u', $this->getSeparator(), $value);
+        $value = preg_replace('~[^\\pL\d]+~u', $this->getSeparator(), $value);
+        $value = trim($value, $this->getSeparator());
+        return $value;
     }
 
     /**
@@ -185,5 +202,24 @@ class Sanitize extends AbstractFilter
     public function getSeparator()
     {
         return $this->separator;
+    }
+
+    /**
+     * @param bool $lowercase
+     * @return Sanitize
+     */
+    public function setLowercase($lowercase)
+    {
+        $this->lowercase = $lowercase;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getLowercase()
+    {
+        return $this->lowercase;
     }
 }
