@@ -2,6 +2,7 @@
 
 namespace LemoBase\Mvc\Controller\Plugin;
 
+use Zend\Filter\StripNewlines;
 use Zend\Form\Form;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 
@@ -167,7 +168,8 @@ class Notice extends FlashMessenger
      */
     protected function _addNotice($text, $title, $type)
     {
-        $text = (string) $text;
+        $filter = new StripNewlines();
+        $text = $filter->filter(nl2br((string) $text));
 
         if(!in_array($type, array(self::ERROR, self::ERROR_FORM, self::INFORMATION, self::SUCCESS, self::WARNING))) {
             throw new \Exception("Message type '{$type}' isn`t supported.");
