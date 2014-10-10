@@ -1,13 +1,12 @@
 <?php
 
-
 namespace LemoBase\Validator;
 
 use Zend\Validator\AbstractValidator;
 
 class UniqueValue extends AbstractValidator
 {
-    const INVALID = 'intInvalid';
+    const INVALID = 'valueInvalid';
     const NOT_UNIQUE = 'valueNotUnique';
 
     /**
@@ -35,7 +34,7 @@ class UniqueValue extends AbstractValidator
      */
     public function __construct($options = array())
     {
-        if(array_key_exists('haystack', $options) && is_array($options['values'])) {
+        if(array_key_exists('haystack', $options) && is_array($options['haystack'])) {
             $this->setHaystack($options['haystack']);
         }
 
@@ -101,16 +100,17 @@ class UniqueValue extends AbstractValidator
                     break;
             }
         }
+
         return $array;
     }
 
     /**
      * In array comparsion, case insensitive by default
      *
-     * @param string|array     $needle
-     * @param string|array     $haystack
-     * @param bool             $caseSensitive
-     * @param bool             $strict
+     * @param  string|array $needle
+     * @param  string|array $haystack
+     * @param  bool         $caseSensitive
+     * @param  bool         $strict
      * @return bool
      */
     protected function inArray($needle, $haystack, $caseSensitive = false, $strict = false)
@@ -147,7 +147,7 @@ class UniqueValue extends AbstractValidator
     /**
      * Set haystack for comparsion
      *
-     * @param array $values
+     * @param  array $values
      * @return UniqueValue
      */
     public function setHaystack(array $values)
