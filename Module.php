@@ -67,7 +67,11 @@ class Module implements
                         ->getRouteMatch();
 
                     $helper = new View\Helper\RouteMatch();
-                    $helper->setRouteMatch($match);
+
+                    if (null !== $match) {
+                        $helper->setRouteMatch($match);
+                    }
+
                     return $helper;
                 },
             )
