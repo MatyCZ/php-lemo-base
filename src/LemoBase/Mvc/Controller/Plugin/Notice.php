@@ -3,7 +3,7 @@
 namespace LemoBase\Mvc\Controller\Plugin;
 
 use Zend\Filter\StripNewlines;
-use Zend\Form\Form;
+use Zend\Form\FormInterface;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 
 class Notice extends FlashMessenger
@@ -14,7 +14,12 @@ class Notice extends FlashMessenger
     const SUCCESS     = 'success';
     const WARNING     = 'warning';
 
-    protected $translator;
+    /**
+     * List of input labels which be replaced
+     *
+     * @var array
+     */
+    protected $inputLabels = [];
 
     /**
      * Add new error notice to the buffer
@@ -25,11 +30,11 @@ class Notice extends FlashMessenger
      */
     public function error($text, $title = null)
     {
-        if(null === $title) {
-            $title = 'Chyba';
+        if (null === $title) {
+            $title = 'Error';
         }
 
-        $this->_addNotice($text, $title, self::ERROR);
+        $this->_addNotice(self::ERROR, $text, $title);
 
         return $this;
     }
@@ -37,26 +42,41 @@ class Notice extends FlashMessenger
     /**
      * Add errors notices from form
      *
-     * @param Form $form
-     * @return \LemoBase\Mvc\Controller\Plugin\Notice
+     * @param  FormInterface $form
+     * @return Notice
      */
-    public function errorForm(Form $form)
+    public function errorForm(FormInterface $form)
     {
-        $formError = array();
+        $formError = [];
         $messages = $form->getInputFilter()->getMessages();
 
         // Grab errors from subforms
-        foreach($form->getFieldsets() as $fieldset) {
-            if ($fieldset instanceof Form) {
+        foreach ($form->getFieldsets() as $fieldset) {
+            if ($fieldset instanceof FormInterface) {
                 $elements = $fieldset->getElements();
                 $inputFilter = $fieldset->getInputFilter();
 
                 if (null !== $inputFilter) {
-                    foreach($inputFilter->getMessages() as $errors) {
-                        foreach($errors as $element => $fieldsetMessages) {
-                            if(isset($elements[$element])) {
-                                foreach($fieldsetMessages as $message) {
-                                    $formError[$message][] = $elements[$element]->getLabel();
+                    foreach ($inputFilter->getMessages() as $errors) {
+                        foreach ($errors as $element => $fieldsetMessages) {
+                            $label = $element;
+
+                            if (array_key_exists($element, $elements)) {
+                                foreach ($fieldsetMessages as $message) {
+                                    $label = $element;
+
+                                    // Element exists, get its label
+                                    if (array_key_exists($element, $elements)) {
+                                        $label = $elements[$element]->getLabel();
+                                    }
+
+                                    // Input has custom label, use it
+                                    if (isset($this->inputLabels[$element])) {
+                                        $label = $this->inputLabels[$element];
+                                    }
+
+                                    // Add label to messages
+                                    $formError[$message][] = $label;
                                 }
                             }
                         }
@@ -68,23 +88,30 @@ class Notice extends FlashMessenger
 
         // Grab errors from form
         $elements = $form->getElements();
-        foreach($messages as $element => $errors) {
-            foreach($errors as $message) {
-                if(array_key_exists($element, $elements)) {
-                    if ('' != $elements[$element]->getLabel()) {
-                        $formError[$message][] = $this->getController()->getServiceLocator()->get('Zend\View\Renderer\PhpRenderer')->translate($elements[$element]->getLabel());
-                    } else {
-                        $formError[$message][] = $elements[$element]->getLabel();
-                    }
+        foreach ($messages as $element => $errors) {
+            foreach ($errors as $message) {
+                $label = $element;
+
+                // Element exists, get its label
+                if (array_key_exists($element, $elements)) {
+                    $label = $elements[$element]->getLabel();
                 }
+
+                // Input has custom label, use it
+                if (isset($this->inputLabels[$element])) {
+                    $label = $this->inputLabels[$element];
+                }
+
+                // Add label to messages
+                $formError[$message][] = $label;
             }
         }
 
         // Add error notices
-        foreach($formError as $message => $elements) {
+        foreach ($formError as $message => $elements) {
             sort($elements);
 
-            $this->_addNotice(implode(', ', $elements), $message . ':', self::ERROR_FORM);
+            $this->_addNotice(self::ERROR_FORM, $elements, $message . ':');
         }
 
         return $this;
@@ -99,11 +126,11 @@ class Notice extends FlashMessenger
      */
     public function information($text, $title = null)
     {
-        if(null === $title) {
-            $title = 'Informace';
+        if (null === $title) {
+            $title = 'Information';
         }
 
-        $this->_addNotice($text, $title, self::INFORMATION);
+        $this->_addNotice(self::INFORMATION, $text, $title);
 
         return $this;
     }
@@ -117,11 +144,11 @@ class Notice extends FlashMessenger
      */
     public function success($text, $title = null)
     {
-        if(null === $title) {
-            $title = 'Úspěch';
+        if (null === $title) {
+            $title = 'Success';
         }
 
-        $this->_addNotice($text, $title, self::SUCCESS);
+        $this->_addNotice(self::SUCCESS, $text, $title);
 
         return $this;
     }
@@ -135,11 +162,11 @@ class Notice extends FlashMessenger
      */
     public function warning($text, $title = null)
     {
-        if(null === $title) {
-            $title = 'Upozornění';
+        if (null === $title) {
+            $title = 'Warning';
         }
 
-        $this->_addNotice($text, $title, self::WARNING);
+        $this->_addNotice(self::WARNING, $text, $title);
 
         return $this;
     }
@@ -162,39 +189,66 @@ class Notice extends FlashMessenger
     /**
      * Add new notice to the flashMessanger buffer
      *
-     * @param string $text
+     * @param string      $type danger|information|success|warning
+     * @param string      $text
      * @param string|null $title
-     * @param danger|information|success|warning $type
      */
-    protected function _addNotice($text, $title, $type)
+    protected function _addNotice($type, $text, $title = null)
     {
-        $filter = new StripNewlines();
-        $text = $filter->filter(nl2br((string) $text));
-
-        if(!in_array($type, array(self::ERROR, self::ERROR_FORM, self::INFORMATION, self::SUCCESS, self::WARNING))) {
-            throw new \Exception("Message type '{$type}' isn`t supported.");
+        if (!in_array($type, [self::ERROR, self::ERROR_FORM, self::INFORMATION, self::SUCCESS, self::WARNING])) {
+            throw new \Exception("Message type '{$type}' is not supported.");
         }
 
-        if(null === $title) {
-            $title = $type;
-        }
-
-        $text = array(
+        $message = [
             'type' => $type,
             'title' => $title,
             'text' => $text,
-        );
+        ];
 
-        parent::addMessage($text);
+        parent::addMessage($message);
     }
 
-    public function setTranslator($translator)
+    /**
+     * @param  string $inputName
+     * @param  string $inputLabel
+     * @return Notice
+     */
+    public function addInputLabel($inputName, $inputLabel)
     {
-        $this->translator = $translator;
+        $this->inputLabels[$inputName] = $inputLabel;
+
+        return $this;
     }
 
-    public function getTranslator()
+    /**
+     * @param  string $inputName
+     * @return Notice
+     */
+    public function removeInputLabel($inputName)
     {
-        return $this->translator;
+        if (isset($this->inputLabels[$inputName])) {
+            unset($this->inputLabels[$inputName]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param  array $inputLabels
+     * @return Notice
+     */
+    public function setInputLabels($inputLabels)
+    {
+        $this->inputLabels = $inputLabels;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInputLabels()
+    {
+        return $this->inputLabels;
     }
 }

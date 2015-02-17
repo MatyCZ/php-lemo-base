@@ -6,6 +6,7 @@ use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ControllerPluginProviderInterface;
 use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
+use Zend\Mvc\Controller\PluginManager;
 use Zend\View\HelperPluginManager;
 
 class Module implements
@@ -42,8 +43,14 @@ class Module implements
     public function getControllerPluginConfig()
     {
         return array(
-            'invokables' => array(
-                'notice'         => 'LemoBase\Mvc\Controller\Plugin\Notice',
+            'aliases' => array(
+                'notice' => 'LemoBase\Mvc\Controller\Plugin\Notice',
+            ),
+            'factories' => array(
+                'LemoBase\Mvc\Controller\Plugin\Notice' => function (PluginManager $pluginManager) {
+                    $plugin = new Mvc\Controller\Plugin\Notice();
+                    return $plugin;
+                },
             )
         );
     }

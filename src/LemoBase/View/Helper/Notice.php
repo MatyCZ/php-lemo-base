@@ -2,50 +2,51 @@
 
 namespace LemoBase\View\Helper;
 
-use LemoBase\Mvc\Controller\Plugin\Notice as NoticeControllerPlugin,
-    Zend\View\Helper\AbstractHelper,
-    Zend\View\Exception;
+use LemoBase\Mvc\Controller\Plugin\Notice as NoticeControllerPlugin;
+use Zend\Filter\StripNewlines as FilterStripNewLines;
+use Zend\View\Helper\AbstractHelper;
+use Zend\View\Exception;
 
 class Notice extends AbstractHelper
 {
     /**
-     * @var \LemoBase\Mvc\Controller\Plugin\Notice
+     * @var NoticeControllerPlugin
      */
-    protected $_notice = null;
+    protected $notice = null;
 
     /**
      * Append text string
      *
      * @var string
      */
-    protected $_textAppendString = null;
+    protected $textAppendString = null;
 
     /**
      * Prepend text string
      *
      * @var string
      */
-    protected $_textPrependString = null;
+    protected $textPrependString = null;
 
     /**
      * Append title string
      *
      * @var string
      */
-    protected $_titleAppendString = null;
+    protected $titleAppendString = null;
 
     /**
      * Prepend title string
      *
      * @var string
      */
-    protected $_titlePrependString = null;
+    protected $titlePrependString = null;
 
     /**
      * Whether or not auto-translation is enabled
      * @var boolean
      */
-    protected $_translate = true;
+    protected $translate = true;
 
     /**
      * Render script with notices
@@ -54,8 +55,8 @@ class Notice extends AbstractHelper
      */
     public function __invoke()
     {
-        if(null === $this->_notice) {
-            $this->_notice = new NoticeControllerPlugin();
+        if(null === $this->notice) {
+            $this->notice = new NoticeControllerPlugin();
         }
 
         return $this;
@@ -68,22 +69,61 @@ class Notice extends AbstractHelper
      */
     public function toString()
     {
-        if(!$this->_notice->hasMessages()) {
+        if(!$this->notice->hasMessages()) {
             return '';
         }
 
+        $filterStripNewLines = new FilterStripNewlines();
+
         $xhtml[] = '<script type="text/javascript">';
 
-        foreach($this->_notice->getMessages() as $message) {
-            $message['title'] = $this->getTitlePrependString() . $message['title'] . $this->getTitleAppendString();
+        foreach($this->notice->getMessages() as $message) {
 
-            if(NoticeControllerPlugin::ERROR_FORM != $message['type']) {
-                $message['text'] = $this->getTextPrependString() . $message['text'] . $this->getTextAppendString();
+            // Prepare title
+            if (!empty($message['title'])) {
+                if (is_array($message['title'])) {
+                    $messageTitles = '';
+                    foreach ($message['title'] as $title) {
+                        if ($this->translate) {
+                            $messageTitles[] = $this->getView()->translate($title);
+                        } else {
+                            $messageTitles[] = $title;
+                        }
+                    }
+
+                    $message['title'] = implode('<br>', $messageTitles);
+                } else {
+                    if ($this->translate) {
+                        $message['title'] = $this->getView()->translate($message['title']);
+                    }
+                }
+
+                $message['title'] = $this->getTitlePrependString() . $message['title'] . $this->getTitleAppendString();
             }
 
-            if($this->_translate) {
-                $message['title'] = $this->getView()->translate($message['title']);
-                $message['text'] = $this->getView()->translate($message['text']);
+            // Prepare text
+            if (is_array($message['text'])) {
+                $messageTexts = '';
+                foreach ($message['text'] as $text) {
+                    if ($this->translate) {
+                        $messageTexts[] = $this->getView()->translate($text);
+                    } else {
+                        $messageTexts[] = $text;
+                    }
+                }
+
+                $message['text'] = implode(PHP_EOL, $messageTexts);
+            } else {
+                if ($this->translate) {
+                    $message['text'] = $this->getView()->translate($message['text']);
+                }
+            }
+
+            // Replace
+            $message['text'] = $filterStripNewLines->filter(nl2br((string) $message['text']));
+
+            if (NoticeControllerPlugin::ERROR_FORM != $message['type']) {
+                $message['text'] = $this->getTextPrependString() . $message['text'] . $this->getTextAppendString();
             }
 
             $xhtml[] = "Lemo_Alert.build('" .$message['type'] . "', '" .addslashes($message['title']) . "', '" .addslashes(str_replace("'", '`', $message['text'])) . "');";
@@ -107,12 +147,12 @@ class Notice extends AbstractHelper
     /**
      * Set text append string
      *
-     * @param string $textAppendString
-     * @return \LemoBase\View\Helper\Notice
+     * @param  string $textAppendString
+     * @return Notice
      */
     public function setTextAppendString($textAppendString)
     {
-        $this->_textAppendString = $textAppendString;
+        $this->textAppendString = $textAppendString;
 
         return $this;
     }
@@ -124,18 +164,18 @@ class Notice extends AbstractHelper
      */
     public function getTextAppendString()
     {
-        return $this->_textAppendString;
+        return $this->textAppendString;
     }
 
     /**
      * Set message prepend string
      *
-     * @param string $textPrependString
-     * @return \LemoBase\View\Helper\Notice
+     * @param  string $textPrependString
+     * @return Notice
      */
     public function setTextPrependString($textPrependString)
     {
-        $this->_textPrependString = $textPrependString;
+        $this->textPrependString = $textPrependString;
 
         return $this;
     }
@@ -147,18 +187,18 @@ class Notice extends AbstractHelper
      */
     public function getTextPrependString()
     {
-        return $this->_textPrependString;
+        return $this->textPrependString;
     }
 
     /**
      * Set title append string
      *
-     * @param string $titleAppendString
-     * @return \LemoBase\View\Helper\Notice
+     * @param  string $titleAppendString
+     * @return Notice
      */
     public function setTitleAppendString($titleAppendString)
     {
-        $this->_titleAppendString = $titleAppendString;
+        $this->titleAppendString = $titleAppendString;
 
         return $this;
     }
@@ -170,18 +210,18 @@ class Notice extends AbstractHelper
      */
     public function getTitleAppendString()
     {
-        return $this->_titleAppendString;
+        return $this->titleAppendString;
     }
 
     /**
      * Set title prepend string
      *
-     * @param string $titlePrependString
-     * @return \LemoBase\View\Helper\Notice
+     * @param  string $titlePrependString
+     * @return Notice
      */
     public function setTitlePrependString($titlePrependString)
     {
-        $this->_titlePrependString = $titlePrependString;
+        $this->titlePrependString = $titlePrependString;
 
         return $this;
     }
@@ -193,7 +233,7 @@ class Notice extends AbstractHelper
      */
     public function getTitlePrependString()
     {
-        return $this->_titlePrependString;
+        return $this->titlePrependString;
     }
 
     // Translator
@@ -201,11 +241,11 @@ class Notice extends AbstractHelper
     /**
      * Enables translation
      *
-     * @return \LemoBase\View\Helper\Notice
+     * @return Notice
      */
     public function enableTranslation()
     {
-        $this->_translate = true;
+        $this->translate = true;
 
         return $this;
     }
@@ -213,11 +253,11 @@ class Notice extends AbstractHelper
     /**
      * Disables translation
      *
-     * @return \LemoBase\View\Helper\Notice
+     * @return Notice
      */
     public function disableTranslation()
     {
-        $this->_translate = false;
+        $this->translate = false;
 
         return $this;
     }
