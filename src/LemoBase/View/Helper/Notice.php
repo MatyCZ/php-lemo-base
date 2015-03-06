@@ -112,7 +112,7 @@ class Notice extends AbstractHelper
                     }
                 }
 
-                $message['text'] = implode(PHP_EOL, $messageTexts);
+                $message['text'] = implode('<br>', $messageTexts);
             } else {
                 if ($this->translate) {
                     $message['text'] = $this->getView()->translate($message['text']);
