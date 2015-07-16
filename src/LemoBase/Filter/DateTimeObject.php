@@ -31,8 +31,11 @@ class DateTimeObject extends AbstractFilter
         if (empty($value)) {
             return null;
         }
+        if ($value instanceof DateTime) {
+            return $value;
+        }
 
-        if(preg_match('~^([0-9]{1,2}\.) ([0-9]{1,2}\.) ([0-9]{2,4})(.*)$~', $value, $m)) {
+        if (preg_match('~^([0-9]{1,2}\.) ([0-9]{1,2}\.) ([0-9]{2,4})(.*)$~', $value, $m)) {
             $value = $m[1] . $m[2] . $m[3] . $m[4];
         }
 
