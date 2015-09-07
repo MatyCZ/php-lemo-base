@@ -117,7 +117,7 @@ class StringReplace extends AbstractFilter
     public function filter($value)
     {
         if (empty($value)) {
-            return null;
+            return $value;
         }
 
         return str_replace($this->options['search'], $this->options['replace'],$value);

@@ -30,7 +30,7 @@ class Float extends AbstractFilter
      */
     public function filter($value) {
 
-        if (empty($value)) {
+        if (empty($value) && 0 != $value) {
             return $value;
         }
 
