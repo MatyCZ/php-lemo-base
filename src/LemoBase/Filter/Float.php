@@ -36,7 +36,7 @@ class Float extends AbstractFilter
 
         $value = (string) $value;
         $isNegative = preg_match('~^\-~', $value) ? true : false;
-        $value = preg_replace('~[^[0-9\.]]~', '', $value);
+        $value = preg_replace('~[^0-9\.]~', '', $value);
 
         $value = (float) $value;
         $value = round($value, $this->getPrecision());
