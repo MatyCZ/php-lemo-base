@@ -2,7 +2,6 @@
 
 namespace LemoBase\Mvc\Controller\Plugin;
 
-use Zend\Filter\StripNewlines;
 use Zend\Form\FormInterface;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 
@@ -26,15 +25,16 @@ class Notice extends FlashMessenger
      *
      * @param  string      $text
      * @param  string|null $title
+     * @param  string|null $id
      * @return \LemoBase\Mvc\Controller\Plugin\Notice
      */
-    public function error($text, $title = null)
+    public function error($text, $title = null, $id = null)
     {
         if (null === $title) {
             $title = 'Error';
         }
 
-        $this->_addNotice(self::ERROR, $text, $title);
+        $this->_addNotice(self::ERROR, $text, $title, $id);
 
         return $this;
     }
@@ -59,7 +59,6 @@ class Notice extends FlashMessenger
                 if (null !== $inputFilter) {
                     foreach ($inputFilter->getMessages() as $errors) {
                         foreach ($errors as $element => $fieldsetMessages) {
-                            $label = $element;
 
                             if (array_key_exists($element, $elements)) {
                                 foreach ($fieldsetMessages as $message) {
@@ -122,15 +121,16 @@ class Notice extends FlashMessenger
      *
      * @param  string      $text
      * @param  string|null $title
+     * @param  string|null $id
      * @return \LemoBase\Mvc\Controller\Plugin\Notice
      */
-    public function information($text, $title = null)
+    public function information($text, $title = null, $id = null)
     {
         if (null === $title) {
             $title = 'Information';
         }
 
-        $this->_addNotice(self::INFORMATION, $text, $title);
+        $this->_addNotice(self::INFORMATION, $text, $title, $id);
 
         return $this;
     }
@@ -140,15 +140,16 @@ class Notice extends FlashMessenger
      *
      * @param  string      $text
      * @param  string|null $title
+     * @param  string|null $id
      * @return \LemoBase\Mvc\Controller\Plugin\Notice
      */
-    public function success($text, $title = null)
+    public function success($text, $title = null, $id = null)
     {
         if (null === $title) {
             $title = 'Success';
         }
 
-        $this->_addNotice(self::SUCCESS, $text, $title);
+        $this->_addNotice(self::SUCCESS, $text, $title, $id);
 
         return $this;
     }
@@ -158,15 +159,16 @@ class Notice extends FlashMessenger
      *
      * @param  string      $text
      * @param  string|null $title
+     * @param  string|null $id
      * @return \LemoBase\Mvc\Controller\Plugin\Notice
      */
-    public function warning($text, $title = null)
+    public function warning($text, $title = null, $id = null)
     {
         if (null === $title) {
             $title = 'Warning';
         }
 
-        $this->_addNotice(self::WARNING, $text, $title);
+        $this->_addNotice(self::WARNING, $text, $title, $id);
 
         return $this;
     }
@@ -192,17 +194,20 @@ class Notice extends FlashMessenger
      * @param string      $type danger|information|success|warning
      * @param string      $text
      * @param string|null $title
+     * @param string|null $id
+     * @throws \Exception
      */
-    protected function _addNotice($type, $text, $title = null)
+    protected function _addNotice($type, $text, $title = null, $id = null)
     {
         if (!in_array($type, [self::ERROR, self::ERROR_FORM, self::INFORMATION, self::SUCCESS, self::WARNING])) {
             throw new \Exception("Message type '{$type}' is not supported.");
         }
 
         $message = [
-            'type' => $type,
+            'type'  => $type,
             'title' => $title,
-            'text' => $text,
+            'text'  => $text,
+            'id'    => $id,
         ];
 
         parent::addMessage($message);

@@ -122,11 +122,16 @@ class Notice extends AbstractHelper
             // Replace
             $message['text'] = $filterStripNewLines->filter(nl2br((string) $message['text']));
 
+            // Id
+            if(empty($message['id'])) {
+                $message['id'] = uniqid('alert_', true);
+            }
+
             if (NoticeControllerPlugin::ERROR_FORM != $message['type']) {
                 $message['text'] = $this->getTextPrependString() . $message['text'] . $this->getTextAppendString();
             }
 
-            $xhtml[] = "Lemo_Alert.build('" .$message['type'] . "', '" .addslashes($message['title']) . "', '" .addslashes(str_replace("'", '`', $message['text'])) . "');";
+            $xhtml[] = "Lemo_Alert.build('" .$message['type'] . "', '" .addslashes($message['title']) . "', '" .addslashes(str_replace("'", '`', $message['text'])) . "', '" . $message['id'] . "');";
         }
 
         $xhtml[] = '</script>';
