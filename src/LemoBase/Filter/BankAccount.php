@@ -8,8 +8,7 @@ use Zend\Filter\StringTrim;
 class BankAccount extends AbstractFilter
 {
     /**
-     * @param  string|array|Traversable $options
-     * @return void
+     * @param  string|array|\Traversable $options
      */
     public function __construct($options = null)
     {
@@ -30,12 +29,15 @@ class BankAccount extends AbstractFilter
 
         $accountPrefix = '';
         $accountNo = '';
-        $bakCode = '';
+        $bankCode = '';
 
         if(preg_match('~^\-?([0-9]{2,10})\/([0-9]{4})$~', $value, $m)) {
             $accountNo = $this->stripLeadingZeros($m[1]);
             $bankCode = $m[2];
-        } elseif(preg_match('~^([0-9]{2,6})\-([0-9]{2,10})\/([0-9]{4})$~', $value, $m)) {
+        } elseif(
+            preg_match('~^([0-9]{2,6})\-([0-9]{2,10})\/([0-9]{4})$~', $value, $m) ||
+            preg_match('~^([0-9]{1,6})([0-9]{10})\/([0-9]{4})$~', $value, $m)
+        ) {
             $accountPrefix = $this->stripLeadingZeros($m[1]);
             $accountNo = $this->stripLeadingZeros($m[2]);
             $bankCode = $m[3];
