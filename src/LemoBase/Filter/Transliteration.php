@@ -60,11 +60,8 @@ class Transliteration extends AbstractFilter
      */
     public function filter($value)
     {
-        if(setlocale(LC_ALL, 0) == 'C') {
-            $locale = \Locale::getDefault();
-            $localeKeys = array_keys($locale);
-
-            setlocale(LC_ALL, $localeKeys[0]);
+        if(setlocale(LC_ALL, '0') == 'C') {
+            setlocale(LC_ALL, \Locale::getDefault());
         }
 
         $value = iconv($this->getEncoding(), 'ASCII//TRANSLIT', $value);
