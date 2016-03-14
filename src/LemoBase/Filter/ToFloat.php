@@ -5,7 +5,7 @@ namespace LemoBase\Filter;
 
 use Zend\Filter\AbstractFilter;
 
-class Float extends AbstractFilter
+class ToFloat extends AbstractFilter
 {
     /**
      * @var int
@@ -30,12 +30,13 @@ class Float extends AbstractFilter
      */
     public function filter($value) {
 
-        if (empty($value)) {
+        if (!strlen((string) $value)) {
             return $value;
         }
 
         $value = (string) $value;
-        $value = preg_replace('~[^[0-9\.]]~', '', $value);
+        $isNegative = preg_match('~^\-~', $value) ? true : false;
+        $value = preg_replace('~[^0-9\.]~', '', $value);
 
         $value = (float) $value;
         $value = round($value, $this->getPrecision());
@@ -44,6 +45,10 @@ class Float extends AbstractFilter
 
         if(preg_match('~([0-9]+)(\.*)([0-9]*)~', $value, $m)) {
             $value = $m[1] . '.' . str_pad($m[3], $this->getPrecision(), '0', STR_PAD_RIGHT);
+        }
+
+        if(true === $isNegative) {
+            $value = '-' . $value;
         }
 
         return $value;
