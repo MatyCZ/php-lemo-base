@@ -79,7 +79,7 @@ class StringReplace extends AbstractFilter
     /**
      * Set the replacement array/string
      *
-    * @see str_replace()
+     * @see str_replace()
      *
      * @param  array|string $replace - same as the second argument of str_replace
      * @return self
@@ -117,7 +117,7 @@ class StringReplace extends AbstractFilter
     public function filter($value)
     {
         if (empty($value)) {
-            return null;
+            return $value;
         }
 
         return str_replace($this->options['search'], $this->options['replace'],$value);
