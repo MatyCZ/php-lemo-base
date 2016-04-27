@@ -1,0 +1,44 @@
+<?php
+
+return [
+    'cacheManager' => [
+        'storages' => [
+            'aliases' => [
+                'cacheA' => 'redis',
+                'cacheB' => 'filesystem',
+            ],
+            'factories' => [
+                'redis' => [
+                    'adapter' => [
+                        'name' => 'redis',
+                        'options' => [
+                            'namespace' => 'yournamespace',
+                            'ttl'       => 3600 * 8,
+                            'server'    => [
+                                'localhost',
+                                6379,
+                            ],
+                        ],
+                    ],
+                    'plugins' => [
+                        'serializer'
+                    ],
+                ],
+                'filesystem' => [
+                    'adapter' => [
+                        'name' => 'filesystem',
+                        'options' => [
+                            'cache_dir'      => __DIR__ . '/../../data/cache/',
+                            'ttl'            => 3600 * 24 * 7,
+                            'dirPermission'  => 0755,
+                            'filePermission' => 0666,
+                        ],
+                    ],
+                    'plugins' => [
+                        'serializer'
+                    ],
+                ],
+            ]
+        ]
+    ],
+];
