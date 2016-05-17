@@ -101,6 +101,10 @@ class Notice extends FlashMessenger
                     $label = $this->inputLabels[$element];
                 }
 
+                if (is_array($message)) {
+                    $message = current($message);
+                }
+
                 // Add label to messages
                 $formError[$message][] = $label;
             }

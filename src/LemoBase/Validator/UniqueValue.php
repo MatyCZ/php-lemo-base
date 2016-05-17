@@ -42,7 +42,7 @@ class UniqueValue extends AbstractValidator
             $this->setCaseSensitive(true);
         }
 
-        parent::__construct();
+        parent::__construct($options);
     }
 
     /**
