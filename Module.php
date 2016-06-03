@@ -7,8 +7,6 @@ use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ControllerPluginProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
-use Zend\Mvc\Controller\PluginManager;
-use Zend\View\HelperPluginManager;
 
 class Module implements
     AutoloaderProviderInterface,
@@ -49,12 +47,11 @@ class Module implements
                 'cachemanager' => 'LemoBase\Mvc\Controller\Plugin\CacheManager',
                 'notice'       => 'LemoBase\Mvc\Controller\Plugin\Notice',
             ],
+            'invokables' => [
+                'LemoBase\Mvc\Controller\Plugin\Notice' => 'LemoBase\Mvc\Controller\Plugin\Notice',
+            ],
             'factories' => [
                 'LemoBase\Mvc\Controller\Plugin\CacheManager' => 'LemoBase\Mvc\Controller\Plugin\CacheManagerFactory',
-                'LemoBase\Mvc\Controller\Plugin\Notice' => function (PluginManager $pluginManager) {
-                    $plugin = new Mvc\Controller\Plugin\Notice();
-                    return $plugin;
-                },
             ]
         ];
     }
@@ -69,7 +66,7 @@ class Module implements
                 'CacheManager' => 'LemoBase\Cache\CacheManager',
             ],
             'factories' => [
-                'LemoBase\Cache\CacheManager'  => 'LemoBase\Cache\CacheManagerFactory',
+                'LemoBase\Cache\CacheManager' => 'LemoBase\Cache\CacheManagerFactory',
             ],
         ];
     }
@@ -80,31 +77,15 @@ class Module implements
     public function getViewHelperConfig()
     {
         return [
+            'aliases' => [
+                'routeMatch'  => 'LemoBase\View\Helper\RouteMatch',
+            ],
             'invokables' => [
-                'paramsQuery'    => 'LemoBase\View\Helper\ParamsQuery',
-                'notice'         => 'LemoBase\View\Helper\Notice',
-                'lang'           => 'LemoBase\View\Helper\Lang',
+                'notice'      => 'LemoBase\View\Helper\Notice',
+                'paramsQuery' => 'LemoBase\View\Helper\ParamsQuery',
             ],
             'factories' => [
-                'cachemanager' => function(HelperPluginManager $helperPluginManager) {
-                    $helper = new View\Helper\CacheManager();
-                    $helper->setPluginCacheManager($helperPluginManager->getServiceLocator()->get('ControllerPluginManager')->get('cachemanager'));
-                    return $helper;
-                },
-                'routeMatch' => function(HelperPluginManager $helperPluginManager) {
-                    $match = $helperPluginManager->getServiceLocator()
-                        ->get('application')
-                        ->getMvcEvent()
-                        ->getRouteMatch();
-
-                    $helper = new View\Helper\RouteMatch();
-
-                    if (null !== $match) {
-                        $helper->setRouteMatch($match);
-                    }
-
-                    return $helper;
-                },
+                'LemoBase\View\Helper\RouteMatch' => 'LemoBase\View\Helper\RouteMatchFactory',
             ]
         ];
     }

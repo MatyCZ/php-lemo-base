@@ -2,21 +2,24 @@
 
 namespace LemoBase\Cache;
 
+use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class CacheManagerFactory implements FactoryInterface
 {
     /**
-     * Create and return the view helper manager
+     * Create an object
      *
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @param  ContainerInterface $container
+     * @param  string             $requestedName
+     * @param  null|array         $options
      * @return CacheManager
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config = $serviceLocator->get('Config');
-        $request = $serviceLocator->get('Request');
+        $config = $container->get('Config');
+        $request = $container->get('Request');
 
         $cacheManager = new CacheManager($request);
 
@@ -32,6 +35,18 @@ class CacheManagerFactory implements FactoryInterface
             }
         }
 
+
         return $cacheManager;
+    }
+
+    /**
+     * Create an object (v2)
+     *
+     * @param  ServiceLocatorInterface $container
+     * @return CacheManager
+     */
+    public function createService(ServiceLocatorInterface $container)
+    {
+        return $this($container, CacheManager::class);
     }
 }
