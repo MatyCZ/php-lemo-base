@@ -2,7 +2,7 @@
 
 namespace LemoBase\View\Helper;
 
-use LemoBase\Mvc\Controller\Plugin\Notice as NoticeControllerPlugin;
+use LemoBase\Mvc\Plugin\Notice as NoticeControllerPlugin;
 use Zend\Filter\StripNewlines as FilterStripNewLines;
 use Zend\View\Helper\AbstractHelper;
 use Zend\View\Exception;

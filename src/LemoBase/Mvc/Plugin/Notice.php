@@ -1,9 +1,9 @@
 <?php
 
-namespace LemoBase\Mvc\Controller\Plugin;
+namespace LemoBase\Mvc\Plugin;
 
 use Zend\Form\FormInterface;
-use Zend\Mvc\Controller\Plugin\FlashMessenger;
+use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 
 class Notice extends FlashMessenger
 {
@@ -26,7 +26,7 @@ class Notice extends FlashMessenger
      * @param  string      $text
      * @param  string|null $title
      * @param  string|null $id
-     * @return \LemoBase\Mvc\Controller\Plugin\Notice
+     * @return $this
      */
     public function error($text, $title = null, $id = null)
     {
@@ -43,7 +43,7 @@ class Notice extends FlashMessenger
      * Add errors notices from form
      *
      * @param  FormInterface $form
-     * @return Notice
+     * @return $this
      */
     public function errorForm(FormInterface $form)
     {
@@ -126,7 +126,7 @@ class Notice extends FlashMessenger
      * @param  string      $text
      * @param  string|null $title
      * @param  string|null $id
-     * @return \LemoBase\Mvc\Controller\Plugin\Notice
+     * @return $this
      */
     public function information($text, $title = null, $id = null)
     {
@@ -145,7 +145,7 @@ class Notice extends FlashMessenger
      * @param  string      $text
      * @param  string|null $title
      * @param  string|null $id
-     * @return \LemoBase\Mvc\Controller\Plugin\Notice
+     * @return $this
      */
     public function success($text, $title = null, $id = null)
     {
@@ -220,7 +220,7 @@ class Notice extends FlashMessenger
     /**
      * @param  string $inputName
      * @param  string $inputLabel
-     * @return Notice
+     * @return $this
      */
     public function addInputLabel($inputName, $inputLabel)
     {
@@ -231,7 +231,7 @@ class Notice extends FlashMessenger
 
     /**
      * @param  string $inputName
-     * @return Notice
+     * @return $this
      */
     public function removeInputLabel($inputName)
     {
@@ -244,7 +244,7 @@ class Notice extends FlashMessenger
 
     /**
      * @param  array $inputLabels
-     * @return Notice
+     * @return $this
      */
     public function setInputLabels($inputLabels)
     {

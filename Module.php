@@ -45,10 +45,10 @@ class Module implements
         return [
             'aliases' => [
                 'cachemanager' => 'LemoBase\Mvc\Controller\Plugin\CacheManager',
-                'notice'       => 'LemoBase\Mvc\Controller\Plugin\Notice',
+                'notice'       => 'LemoBase\Mvc\Plugin\Notice',
             ],
             'invokables' => [
-                'LemoBase\Mvc\Controller\Plugin\Notice' => 'LemoBase\Mvc\Controller\Plugin\Notice',
+                'LemoBase\Mvc\Plugin\Notice' => 'LemoBase\Mvc\Plugin\Notice',
             ],
             'factories' => [
                 'LemoBase\Mvc\Controller\Plugin\CacheManager' => 'LemoBase\Mvc\Controller\Plugin\CacheManagerFactory',
