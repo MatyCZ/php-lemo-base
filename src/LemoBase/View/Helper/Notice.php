@@ -124,7 +124,7 @@ class Notice extends AbstractHelper
 
             // Id
             if(empty($message['id'])) {
-                $message['id'] = uniqid('alert_', true);
+                $message['id'] = str_replace('.', '', uniqid('alert_', true));
             }
 
             if (NoticeControllerPlugin::ERROR_FORM != $message['type']) {
