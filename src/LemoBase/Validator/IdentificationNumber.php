@@ -31,6 +31,7 @@ class IdentificationNumber extends AbstractValidator
         }
 
         $this->setValue($value);
+        $value = str_pad($value, 8, '0', STR_PAD_LEFT);
         if (!preg_match('#^\d{8}$#', $value)) {
             $this->error(self::NOT_IDENTIFICATIONNUMBER);
             return false;
