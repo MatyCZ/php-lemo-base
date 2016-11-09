@@ -2,6 +2,7 @@
 
 namespace LemoBase\Mvc\Plugin;
 
+use Zend\Form\FieldsetInterface;
 use Zend\Form\FormInterface;
 use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 
@@ -12,13 +13,6 @@ class Notice extends FlashMessenger
     const INFORMATION = 'info';
     const SUCCESS     = 'success';
     const WARNING     = 'warning';
-
-    /**
-     * List of input labels which be replaced
-     *
-     * @var array
-     */
-    protected $inputLabels = [];
 
     /**
      * Add new error notice to the buffer
@@ -47,66 +41,15 @@ class Notice extends FlashMessenger
      */
     public function errorForm(FormInterface $form)
     {
-        $formError = [];
-        $messages = $form->getInputFilter()->getMessages();
-
-        // Grab errors from subforms
-        foreach ($form->getFieldsets() as $fieldset) {
-            if ($fieldset instanceof FormInterface) {
-                $elements = $fieldset->getElements();
-                $inputFilter = $fieldset->getInputFilter();
-
-                if (null !== $inputFilter) {
-                    foreach ($inputFilter->getMessages() as $errors) {
-                        foreach ($errors as $element => $fieldsetMessages) {
-
-                            if (array_key_exists($element, $elements)) {
-                                foreach ($fieldsetMessages as $message) {
-                                    $label = $element;
-
-                                    // Element exists, get its label
-                                    if (array_key_exists($element, $elements)) {
-                                        $label = $elements[$element]->getLabel();
-                                    }
-
-                                    // Input has custom label, use it
-                                    if (isset($this->inputLabels[$element])) {
-                                        $label = $this->inputLabels[$element];
-                                    }
-
-                                    // Add label to messages
-                                    $formError[$message][] = $label;
-                                }
-                            }
-                        }
-                    }
-                }
-                unset($messages[$fieldset->getName()]);
-            }
-        }
+        $messagesByElements = $this->createFlattenMessages($form, $form->getMessages());
 
         // Grab errors from form
-        $elements = $form->getElements();
-        foreach ($messages as $element => $errors) {
-            foreach ($errors as $message) {
-                $label = $element;
-
-                // Element exists, get its label
-                if (array_key_exists($element, $elements)) {
-                    $label = $elements[$element]->getLabel();
+        $formError = [];
+        foreach ($messagesByElements as $elementLabel => $elementErrors) {
+            foreach ($elementErrors as $message) {
+                if (!empty($message)) {
+                    $formError[$message][] = $elementLabel;
                 }
-
-                // Input has custom label, use it
-                if (isset($this->inputLabels[$element])) {
-                    $label = $this->inputLabels[$element];
-                }
-
-                if (is_array($message)) {
-                    $message = current($message);
-                }
-
-                // Add label to messages
-                $formError[$message][] = $label;
             }
         }
 
@@ -118,6 +61,46 @@ class Notice extends FlashMessenger
         }
 
         return $this;
+    }
+
+    public function createFlattenMessages($fieldset, $errorMessages, $parentNames = [])
+    {
+        $names = [];
+        foreach ($errorMessages as $elementName => $elementErrorMessages) {
+            if ($fieldset->has($elementName)) {
+                $element = $fieldset->get($elementName);
+
+                if ($element instanceof FieldsetInterface) {
+                    if (!empty($element->getLabel())) {
+                        $parentNames[] = $element->getLabel();
+                    }
+
+                    $names = array_merge($names, $this->createFlattenMessages($element, $elementErrorMessages, $parentNames));
+                } else {
+
+                    // Create element name
+                    $name = $element->getLabel();
+                    if (empty($name)) {
+                        $name = $element->getLabel();
+                    }
+
+                    // Create element name for fieldset element
+                    if (!empty($parentNames)) {
+                        $name = implode(' > ', $parentNames) . ' > ' . $name;
+                    }
+
+                    $name = strip_tags($name);
+                    $name = trim($name);
+
+                    // Append error messages to element
+                    foreach ($elementErrorMessages as $errorKey => $errorMessage) {
+                        $names[$name][$errorKey] = $errorMessage;
+                    }
+                }
+            }
+        }
+
+        return $names;
     }
 
     /**
@@ -164,7 +147,7 @@ class Notice extends FlashMessenger
      * @param  string      $text
      * @param  string|null $title
      * @param  string|null $id
-     * @return \LemoBase\Mvc\Controller\Plugin\Notice
+     * @return $this
      */
     public function warning($text, $title = null, $id = null)
     {
@@ -215,49 +198,5 @@ class Notice extends FlashMessenger
         ];
 
         parent::addMessage($message);
-    }
-
-    /**
-     * @param  string $inputName
-     * @param  string $inputLabel
-     * @return $this
-     */
-    public function addInputLabel($inputName, $inputLabel)
-    {
-        $this->inputLabels[$inputName] = $inputLabel;
-
-        return $this;
-    }
-
-    /**
-     * @param  string $inputName
-     * @return $this
-     */
-    public function removeInputLabel($inputName)
-    {
-        if (isset($this->inputLabels[$inputName])) {
-            unset($this->inputLabels[$inputName]);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param  array $inputLabels
-     * @return $this
-     */
-    public function setInputLabels($inputLabels)
-    {
-        $this->inputLabels = $inputLabels;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getInputLabels()
-    {
-        return $this->inputLabels;
     }
 }

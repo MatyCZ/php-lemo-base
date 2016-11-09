@@ -4,16 +4,10 @@ namespace LemoBase;
 
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
-use Zend\ModuleManager\Feature\ControllerPluginProviderInterface;
-use Zend\ModuleManager\Feature\ServiceProviderInterface;
-use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
 
 class Module implements
     AutoloaderProviderInterface,
-    ConfigProviderInterface,
-    ControllerPluginProviderInterface,
-    ServiceProviderInterface,
-    ViewHelperProviderInterface
+    ConfigProviderInterface
 {
     /**
      * @inheritdoc
@@ -32,61 +26,8 @@ class Module implements
     /**
      * @inheritdoc
      */
-    public function getConfig($env = null)
+    public function getConfig()
     {
         return include __DIR__ . '/config/module.config.php';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getControllerPluginConfig()
-    {
-        return [
-            'aliases' => [
-                'cachemanager' => 'LemoBase\Mvc\Controller\Plugin\CacheManager',
-                'notice'       => 'LemoBase\Mvc\Plugin\Notice',
-            ],
-            'invokables' => [
-                'LemoBase\Mvc\Plugin\Notice' => 'LemoBase\Mvc\Plugin\Notice',
-            ],
-            'factories' => [
-                'LemoBase\Mvc\Controller\Plugin\CacheManager' => 'LemoBase\Mvc\Controller\Plugin\CacheManagerFactory',
-            ]
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getServiceConfig()
-    {
-        return [
-            'aliases' => [
-                'CacheManager' => 'LemoBase\Cache\CacheManager',
-            ],
-            'factories' => [
-                'LemoBase\Cache\CacheManager' => 'LemoBase\Cache\CacheManagerFactory',
-            ],
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getViewHelperConfig()
-    {
-        return [
-            'aliases' => [
-                'routeMatch'  => 'LemoBase\View\Helper\RouteMatch',
-            ],
-            'invokables' => [
-                'notice'      => 'LemoBase\View\Helper\Notice',
-                'paramsQuery' => 'LemoBase\View\Helper\ParamsQuery',
-            ],
-            'factories' => [
-                'LemoBase\View\Helper\RouteMatch' => 'LemoBase\View\Helper\RouteMatchFactory',
-            ]
-        ];
     }
 }

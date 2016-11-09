@@ -2,15 +2,15 @@
 
 namespace LemoBase\View\Helper;
 
-use LemoBase\Mvc\Plugin\Notice as NoticeControllerPlugin;
+use LemoBase\Mvc\Plugin\Notice as ControllerPluginNotice;
 use Zend\Filter\StripNewlines as FilterStripNewLines;
+use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Zend\View\Helper\AbstractHelper;
-use Zend\View\Exception;
 
 class Notice extends AbstractHelper
 {
     /**
-     * @var NoticeControllerPlugin
+     * @var ControllerPluginNotice
      */
     protected $notice = null;
 
@@ -49,16 +49,22 @@ class Notice extends AbstractHelper
     protected $translate = true;
 
     /**
+     * Constructor
+     *
+     * @param ControllerPluginNotice $notice
+     */
+    public function __construct(ControllerPluginNotice $notice)
+    {
+        $this->notice = $notice;
+    }
+
+    /**
      * Render script with notices
      *
      * @return string
      */
     public function __invoke()
     {
-        if(null === $this->notice) {
-            $this->notice = new NoticeControllerPlugin();
-        }
-
         return $this;
     }
 
@@ -67,9 +73,9 @@ class Notice extends AbstractHelper
      *
      * @return string
      */
-    public function toString()
+    public function render()
     {
-        if(!$this->notice->hasMessages()) {
+        if (false === $this->notice->hasMessages() && false === $this->notice->hasCurrentMessages()) {
             return '';
         }
 
@@ -77,7 +83,15 @@ class Notice extends AbstractHelper
 
         $xhtml[] = '<script type="text/javascript">';
 
-        foreach($this->notice->getMessages() as $message) {
+        $messages = array_merge(
+            $this->notice->getCurrentMessages(),
+            $this->notice->getMessages()
+        );
+
+        $this->notice->clearMessages();
+        $this->notice->clearCurrentMessages();
+
+        foreach($messages as $message) {
 
             // Prepare title
             if (!empty($message['title'])) {
@@ -112,7 +126,11 @@ class Notice extends AbstractHelper
                     }
                 }
 
-                $message['text'] = implode('<br>', $messageTexts);
+                if ('danger' == $message['type']) {
+                    $message['text'] = '<ul class="padding-left-30"><li>' . implode('</li><li>', $messageTexts) . '</li></ul>';
+                } else {
+                    $message['text'] = implode('<br>', $messageTexts);
+                }
             } else {
                 if ($this->translate) {
                     $message['text'] = $this->getView()->translate($message['text']);
@@ -127,7 +145,7 @@ class Notice extends AbstractHelper
                 $message['id'] = str_replace('.', '', uniqid('alert_', true));
             }
 
-            if (NoticeControllerPlugin::ERROR_FORM != $message['type']) {
+            if (ControllerPluginNotice::ERROR_FORM != $message['type']) {
                 $message['text'] = $this->getTextPrependString() . $message['text'] . $this->getTextAppendString();
             }
 
@@ -140,16 +158,6 @@ class Notice extends AbstractHelper
     }
 
     /**
-     * Cast to string representation
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
-    }
-
-    /**
      * Set text append string
      *
      * @param  string $textAppendString
@@ -158,7 +166,6 @@ class Notice extends AbstractHelper
     public function setTextAppendString($textAppendString)
     {
         $this->textAppendString = $textAppendString;
-
         return $this;
     }
 
@@ -181,7 +188,6 @@ class Notice extends AbstractHelper
     public function setTextPrependString($textPrependString)
     {
         $this->textPrependString = $textPrependString;
-
         return $this;
     }
 
@@ -204,7 +210,6 @@ class Notice extends AbstractHelper
     public function setTitleAppendString($titleAppendString)
     {
         $this->titleAppendString = $titleAppendString;
-
         return $this;
     }
 
@@ -227,7 +232,6 @@ class Notice extends AbstractHelper
     public function setTitlePrependString($titlePrependString)
     {
         $this->titlePrependString = $titlePrependString;
-
         return $this;
     }
 
@@ -251,7 +255,6 @@ class Notice extends AbstractHelper
     public function enableTranslation()
     {
         $this->translate = true;
-
         return $this;
     }
 
@@ -263,7 +266,6 @@ class Notice extends AbstractHelper
     public function disableTranslation()
     {
         $this->translate = false;
-
         return $this;
     }
 }
