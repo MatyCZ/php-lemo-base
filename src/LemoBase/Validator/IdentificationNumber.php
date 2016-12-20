@@ -32,10 +32,10 @@ class IdentificationNumber extends AbstractValidator
      *
      * @param null|array $options
      */
-    public function __construct(array $options = null)
+    public function __construct(array $options = [])
     {
-        if (array_key_exists('excluded', $options)) {
-            $this->setExclude($options['excluded']);
+        if (array_key_exists('exclude', $options)) {
+            $this->setExclude($options['exclude']);
         }
 
         parent::__construct($options);
