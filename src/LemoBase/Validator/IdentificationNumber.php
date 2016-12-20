@@ -2,6 +2,7 @@
 
 namespace LemoBase\Validator;
 
+use Exception;
 use Zend\Validator\AbstractValidator;
 
 class IdentificationNumber extends AbstractValidator
@@ -16,6 +17,29 @@ class IdentificationNumber extends AbstractValidator
         self::INVALID => "Invalid type given. String or integer expected",
         self::NOT_IDENTIFICATIONNUMBER => "The value does not appear to be an identification number",
     );
+
+    /**
+     * Excluded regular expression patterns without delimiter
+     *
+     * ['0000$', '9999$']
+     *
+     * @var array
+     */
+    protected $exclude = [];
+
+    /**
+     * BirthNumber constructor.
+     *
+     * @param null|array $options
+     */
+    public function __construct(array $options = null)
+    {
+        if (array_key_exists('excluded', $options)) {
+            $this->setExclude($options['excluded']);
+        }
+
+        parent::__construct($options);
+    }
 
     /**
      * Returns true if and only if $value is a valid integer
@@ -37,6 +61,13 @@ class IdentificationNumber extends AbstractValidator
             return false;
         }
 
+        // Regularni vyrazy pro hodnoty, ktere se povazuji za validni
+        foreach ($this->exclude as $pattern) {
+            if (true === preg_match($pattern, preg_quote($value, '~'))) {
+                return true;
+            }
+        }
+
         // kontrolní součet
         $a = 0;
         for ($i = 0; $i < 7; $i++) {
@@ -56,5 +87,34 @@ class IdentificationNumber extends AbstractValidator
         }
 
         return true;
+    }
+
+    /**
+     * Set excluded patterns
+     *
+     * @param  array $exclude
+     * @return $this
+     */
+    public function setExclude(array $exclude)
+    {
+        foreach ($exclude as $pattern) {
+            $this->testPregPattern($pattern);
+            $this->exclude[] = $pattern;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Test regular expression pattern
+     *
+     * @param  string $pattern
+     * @throws Exception
+     */
+    protected function testPregPattern($pattern)
+    {
+        if (false === @preg_match('~' . $pattern . '~', null)) {
+            throw new Exception(sprintf('Invalid regular expression pattern `%s` in options', $pattern));
+        }
     }
 }

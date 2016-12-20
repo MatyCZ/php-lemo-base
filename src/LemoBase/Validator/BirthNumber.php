@@ -2,6 +2,7 @@
 
 namespace LemoBase\Validator;
 
+use Exception;
 use Zend\Validator\AbstractValidator;
 
 class BirthNumber extends AbstractValidator
@@ -18,6 +19,29 @@ class BirthNumber extends AbstractValidator
     );
 
     /**
+     * Excluded regular expression patterns without delimiter
+     *
+     * ['0000$', '9999$']
+     *
+     * @var array
+     */
+    protected $exclude = [];
+
+    /**
+     * BirthNumber constructor.
+     *
+     * @param null|array $options
+     */
+    public function __construct(array $options = null)
+    {
+        if (array_key_exists('excluded', $options)) {
+            $this->setExclude($options['excluded']);
+        }
+
+        parent::__construct($options);
+    }
+
+    /**
      * Returns true if and only if $value is a valid integer
      *
      * @param  string|integer $value
@@ -28,6 +52,13 @@ class BirthNumber extends AbstractValidator
         if (!is_string($value) && !is_int($value)) {
             $this->error(self::INVALID);
             return false;
+        }
+
+        // Regularni vyrazy pro hodnoty, ktere se povazuji za validni
+        foreach ($this->exclude as $pattern) {
+            if (true === preg_match($pattern, preg_quote($value, '~'))) {
+                return true;
+            }
         }
 
         $this->setValue($value);
@@ -65,5 +96,34 @@ class BirthNumber extends AbstractValidator
         }
 
         return true;
+    }
+
+    /**
+     * Set excluded patterns
+     *
+     * @param  array $exclude
+     * @return $this
+     */
+    public function setExclude(array $exclude)
+    {
+        foreach ($exclude as $pattern) {
+            $this->testPregPattern($pattern);
+            $this->exclude[] = $pattern;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Test regular expression pattern
+     *
+     * @param  string $pattern
+     * @throws Exception
+     */
+    protected function testPregPattern($pattern)
+    {
+        if (false === @preg_match('~' . $pattern . '~', null)) {
+            throw new Exception(sprintf('Invalid regular expression pattern `%s` in options', $pattern));
+        }
     }
 }
