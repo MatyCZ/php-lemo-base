@@ -123,7 +123,6 @@ class Sanitize extends AbstractFilter
     protected function convertToAscii($value)
     {
         $filter = new Transliteration();
-        $filter->setEncoding($this->getEncoding());
 
         return $filter->filter($value);
     }
