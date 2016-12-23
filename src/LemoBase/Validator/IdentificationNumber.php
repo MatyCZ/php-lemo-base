@@ -56,14 +56,14 @@ class IdentificationNumber extends AbstractValidator
 
         $this->setValue($value);
         $value = str_pad($value, 8, '0', STR_PAD_LEFT);
-        if (!preg_match('#^\d{8}$#', $value)) {
+        if (!preg_match('~^\d{8}$~', preg_quote($value, '~'))) {
             $this->error(self::NOT_IDENTIFICATIONNUMBER);
             return false;
         }
 
         // Regularni vyrazy pro hodnoty, ktere se povazuji za validni
         foreach ($this->exclude as $pattern) {
-            if (true === preg_match($pattern, preg_quote($value, '~'))) {
+            if (true === preg_match('~' . $pattern . '~', preg_quote($value, '~'))) {
                 return true;
             }
         }

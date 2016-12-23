@@ -56,13 +56,13 @@ class BirthNumber extends AbstractValidator
 
         // Regularni vyrazy pro hodnoty, ktere se povazuji za validni
         foreach ($this->exclude as $pattern) {
-            if (true === preg_match($pattern, preg_quote($value, '~'))) {
+            if (true === preg_match('~' . $pattern . '~', preg_quote($value, '~'))) {
                 return true;
             }
         }
 
         $this->setValue($value);
-        if(!preg_match('#^\s*(\d\d)(\d\d)(\d\d)(\d\d\d)(\d?)\s*$#', $value, $matches)) {
+        if(!preg_match('~^\s*(\d\d)(\d\d)(\d\d)(\d\d\d)(\d?)\s*$~', preg_quote($value, '~'), $matches)) {
             $this->error(self::NOT_BIRTHNUMBER);
             return false;
         }
