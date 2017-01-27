@@ -117,7 +117,7 @@ class Notice extends AbstractHelper
 
             // Prepare text
             if (is_array($message['text'])) {
-                $messageTexts = '';
+                $messageTexts = [];
                 foreach ($message['text'] as $text) {
                     if ($this->translate) {
                         $messageTexts[] = $this->getView()->translate($text);
