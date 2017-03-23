@@ -63,7 +63,7 @@ class IdentificationNumber extends AbstractValidator
 
         // Regularni vyrazy pro hodnoty, ktere se povazuji za validni
         foreach ($this->exclude as $pattern) {
-            if (true === preg_match('~' . $pattern . '~', preg_quote($value, '~'))) {
+            if (1 === preg_match('~' . $pattern . '~', preg_quote($value, '~'))) {
                 return true;
             }
         }
