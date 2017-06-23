@@ -14,7 +14,7 @@ class StringContains extends AbstractValidator
     /**
      * @var bool
      */
-    protected $_requireAlpha         = true;
+    protected $requireAlpha         = true;
 
     /**
      * @var bool
@@ -24,32 +24,32 @@ class StringContains extends AbstractValidator
     /**
      * @var bool
      */
-    protected $_requireNumeric       = true;
+    protected $requireNumeric       = true;
 
     /**
      * @var bool
      */
-    protected $_requireSmallLetter   = false;
+    protected $requireSmallLetter   = false;
 
     /**
      * @var array
      */
-    protected $_messageTemplates = array(
+    protected $messageTemplates = [
         self::NO_ALPHA          => 'Value must contain at least one alphabetic character',
         self::NO_CAPITAL_LETTER => 'Value must contain at least one capital letter',
         self::NO_NUMERIC        => 'Value must contain at least one numeric character',
         self::NO_SMALL_LETTER   => 'Value must contain at least one small letter',
-    );
+    ];
 
     public function __construct(array $options = null)
     {
         if (null !== $options) {
             if (isset($options['requireAlpha'])) {
-                $this->_requireAlpha = (bool) $options['requireAlpha'];
+                $this->requireAlpha = (bool) $options['requireAlpha'];
             }
 
             if (isset($options['requireNumeric'])) {
-                $this->_requireNumeric = (bool) $options['requireNumeric'];
+                $this->requireNumeric = (bool) $options['requireNumeric'];
             }
 
             if (isset($options['requireCapitalLetter'])) {
@@ -57,7 +57,7 @@ class StringContains extends AbstractValidator
             }
 
             if (isset($options['requireSmallLetter'])) {
-                $this->_requireNumeric = (bool) $options['requireSmallLetter'];
+                $this->requireSmallLetter = (bool) $options['requireSmallLetter'];
             }
         }
 
@@ -76,7 +76,7 @@ class StringContains extends AbstractValidator
         $value = (string) $value;
 
         // Alphanumeric
-        if (true === $this->_requireAlpha && 0 == preg_match('/[a-z]/i', $value)) {
+        if (true === $this->requireAlpha && 0 == preg_match('/[a-z]/i', $value)) {
             $this->error(self::NO_ALPHA);
             return false;
         }
@@ -88,13 +88,13 @@ class StringContains extends AbstractValidator
         }
 
         // Numeric
-        if (true === $this->_requireNumeric && 0 == preg_match('/\d/', $value)) {
+        if (true === $this->requireNumeric && 0 == preg_match('/\d/', $value)) {
             $this->error(self::NO_NUMERIC);
             return false;
         }
 
         // Small letter
-        if (true === $this->_requireSmallLetter && 0 == preg_match('/[a-z]/', $value)) {
+        if (true === $this->requireSmallLetter && 0 == preg_match('/[a-z]/', $value)) {
             $this->error(self::NO_SMALL_LETTER);
             return false;
         }
