@@ -19,7 +19,7 @@ class StringContains extends AbstractValidator
     /**
      * @var bool
      */
-    protected $_requireCapitalLetter = false;
+    protected $requireCapitalLetter = false;
 
     /**
      * @var bool
@@ -53,7 +53,7 @@ class StringContains extends AbstractValidator
             }
 
             if (isset($options['requireCapitalLetter'])) {
-                $this->_requireCapitalLetter = (bool) $options['requireCapitalLetter'];
+                $this->requireCapitalLetter = (bool) $options['requireCapitalLetter'];
             }
 
             if (isset($options['requireSmallLetter'])) {
@@ -82,7 +82,7 @@ class StringContains extends AbstractValidator
         }
 
         // Capital letter
-        if (true === $this->_requireCapitalLetter && 0 == preg_match('/[A-Z]/', $value)) {
+        if (true === $this->requireCapitalLetter && 0 == preg_match('/[A-Z]/', $value)) {
             $this->error(self::NO_CAPITAL_LETTER);
             return false;
         }
