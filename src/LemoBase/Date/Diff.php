@@ -3,6 +3,7 @@
 namespace LemoBase\Date;
 
 use DateTime;
+use LemoBase\Date\Exception;
 
 class Diff
 {
@@ -48,8 +49,8 @@ class Diff
             $dateEnd = new DateTime($dateEnd);
         }
 
-        $this->dateStart           = $dateStart;
-        $this->dateEnd             = $dateEnd;
+        $this->dateStart           = clone $dateStart;
+        $this->dateEnd             = clone $dateEnd;
         $this->includeEndDay       = $includeEndDay;
         $this->includeEveryStarted = $includeEveryStarted;
 
@@ -63,6 +64,10 @@ class Diff
      */
     private function calculate()
     {
+        if ($this->dateStart->format('YmdHis') > $this->dateEnd->format('YmdHis')) {
+            throw new Exception\RuntimeException('Start date is greater than end date');
+        }
+
         // Pokud jsou oba datumy shodne, vratime jeden den
         if ($this->dateStart == $this->dateEnd) {
             $interval = new DiffInterval();
@@ -71,6 +76,11 @@ class Diff
             $this->interval = $interval;
 
             return $this;
+        }
+
+        // Pridame jeden den navic
+        if (true === $this->includeEndDay) {
+            $this->dateEnd->modify('+1 day');
         }
 
         // Calculate date diff
@@ -82,11 +92,12 @@ class Diff
         $interval->years = $diff->y;
 
         if (true === $this->includeEveryStarted) {
-            $interval->days++;
-            $interval->months++;
-            $interval->years++;
-        } elseif (true === $this->includeEndDay) {
-            $interval->days++;
+            if ($this->dateStart->format('m') >= $this->dateEnd->format('m') && $this->dateStart->format('d') > $this->dateEnd->format('d')) {
+                $interval->months++;
+            }
+            if ($this->dateStart->format('m') > $this->dateEnd->format('m')) {
+                $interval->years++;
+            }
         }
 
         $this->interval = $interval;
