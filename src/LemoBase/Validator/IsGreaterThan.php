@@ -79,8 +79,8 @@ class IsGreaterThan extends AbstractValidator
                 $this->setLiteral($token['literal']);
             }
 
-            if (!array_key_exists('inclusive', $inclusive)) {
-                $options['inclusive'] = $inclusive;
+            if (!array_key_exists('inclusive', $token)) {
+                $this->setInclusive($token['inclusive']);
             }
 
             $this->setToken($token['token']);
