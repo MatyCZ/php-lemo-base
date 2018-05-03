@@ -33,11 +33,6 @@ class IsGreaterThan extends AbstractValidator
     ];
 
     /**
-     * @var bool
-     */
-    protected $strict  = true;
-
-    /**
      * Maximum value as date or field name
      *
      * @var mixed
@@ -51,9 +46,6 @@ class IsGreaterThan extends AbstractValidator
 
     /**
      * Whether to do inclusive comparisons, allowing equivalence to max
-     *
-     * If false, then strict comparisons are done, and the value may equal
-     * the max option
      *
      * @var bool
      */
@@ -71,15 +63,7 @@ class IsGreaterThan extends AbstractValidator
         }
 
         if (is_array($token) && array_key_exists('token', $token)) {
-            if (array_key_exists('strict', $token)) {
-                $this->setStrict($token['strict']);
-            }
-
-            if (array_key_exists('literal', $token)) {
-                $this->setLiteral($token['literal']);
-            }
-
-            if (!array_key_exists('inclusive', $token)) {
+            if (array_key_exists('inclusive', $token)) {
                 $this->setInclusive($token['inclusive']);
             }
 
@@ -89,6 +73,28 @@ class IsGreaterThan extends AbstractValidator
         }
 
         parent::__construct(is_array($token) ? $token : null);
+    }
+
+    /**
+     * Returns the inclusive option
+     *
+     * @return boolean
+     */
+    public function getInclusive()
+    {
+        return $this->inclusive;
+    }
+
+    /**
+     * Sets the inclusive option
+     *
+     * @param  boolean $inclusive
+     * @return GreaterThan Provides a fluent interface
+     */
+    public function setInclusive($inclusive)
+    {
+        $this->inclusive = $inclusive;
+        return $this;
     }
 
     /**
@@ -111,50 +117,6 @@ class IsGreaterThan extends AbstractValidator
     {
         $this->tokenString = (is_array($token) ? var_export($token, true) : (string) $token);
         $this->token       = $token;
-        return $this;
-    }
-
-    /**
-     * Returns the strict parameter
-     *
-     * @return bool
-     */
-    public function getStrict()
-    {
-        return $this->strict;
-    }
-
-    /**
-     * Sets the strict parameter
-     *
-     * @param  bool $strict
-     * @return Identical
-     */
-    public function setStrict($strict)
-    {
-        $this->strict = (bool) $strict;
-        return $this;
-    }
-
-    /**
-     * Returns the inclusive option
-     *
-     * @return boolean
-     */
-    public function getInclusive()
-    {
-        return $this->inclusive;
-    }
-
-    /**
-     * Sets the inclusive option
-     *
-     * @param  boolean $inclusive
-     * @return GreaterThan Provides a fluent interface
-     */
-    public function setInclusive($inclusive)
-    {
-        $this->inclusive = $inclusive;
         return $this;
     }
 
@@ -205,7 +167,7 @@ class IsGreaterThan extends AbstractValidator
             return false;
         }
 
-        if (true === $this->inclusive) {
+        if (true === $this->getInclusive()) {
             if ($value < $token) {
                 $this->error(self::NOT_GREATER_INCLUSIVE);
                 return false;
