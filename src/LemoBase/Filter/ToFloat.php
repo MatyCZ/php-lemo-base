@@ -38,14 +38,9 @@ class ToFloat extends AbstractFilter
         $isNegative = preg_match('~^\-~', $value) ? true : false;
         $value = preg_replace('~[^0-9\.]~', '', $value);
 
-        $value = (float) $value;
+        $value = floatval($value);
         $value = round($value, $this->getPrecision());
-
-        $value = (string) $value;
-
-        if(preg_match('~([0-9]+)(\.*)([0-9]*)~', $value, $m)) {
-            $value = $m[1] . '.' . str_pad($m[3], $this->getPrecision(), '0', STR_PAD_RIGHT);
-        }
+        $value = number_format($value, $this->getPrecision(), '.', '');
 
         if(true === $isNegative) {
             $value = '-' . $value;
