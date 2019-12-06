@@ -2,8 +2,6 @@
 
 namespace LemoBase\Validator;
 
-use Throwable;
-use Zend\Json as ZendJson;
 use Zend\Validator\AbstractValidator;
 
 class Json extends AbstractValidator
@@ -45,13 +43,10 @@ class Json extends AbstractValidator
             return true;
         }
 
-        try {
-            ZendJson\Decoder::decode(
-                $value,
-                ZendJson\Json::TYPE_ARRAY
-            );
-        } catch (Throwable $throwable) {
-            $this->reason = $throwable->getMessage();
+        json_decode($value);
+        $errorMessage = json_last_error_msg();
+        if (!empty($errorMessage)) {
+            $this->reason = $errorMessage;
             $this->error(self::INVALID);
             return false;
         }
