@@ -2,9 +2,9 @@
 
 namespace LemoBase\InputFilter;
 
-use Zend\InputFilter\BaseInputFilter;
+use Laminas\InputFilter\BaseInputFilter;
 
-class InputFilter extends \Zend\InputFilter\InputFilter
+class InputFilter extends \Laminas\InputFilter\InputFilter
 {
     /**
      * @inheritdoc

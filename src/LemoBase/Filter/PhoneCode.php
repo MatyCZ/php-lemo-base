@@ -3,8 +3,7 @@
 
 namespace LemoBase\Filter;
 
-use Zend\Filter\AbstractFilter;
-use Zend\Filter\StringTrim;
+use Laminas\Filter\AbstractFilter;
 
 class PhoneCode extends AbstractFilter
 {
@@ -24,7 +23,7 @@ class PhoneCode extends AbstractFilter
     }
 
     /**
-     * Defined by Zend\Filter\FilterInterface
+     * Defined by Laminas\Filter\FilterInterface
      *
      * @param  string $value
      * @return string

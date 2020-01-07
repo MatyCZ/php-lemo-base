@@ -2,9 +2,9 @@
 
 namespace LemoBase\Validator;
 
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\Validator\AbstractValidator;
 use Traversable;
-use Zend\Stdlib\ArrayUtils;
-use Zend\Validator\AbstractValidator;
 
 class IsGreaterThan extends AbstractValidator
 {

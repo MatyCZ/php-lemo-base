@@ -2,11 +2,11 @@
 
 namespace LemoBase\Cache;
 
+use Laminas\Cache\Exception;
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Cache\StorageFactory;
+use Laminas\Stdlib\RequestInterface;
 use Traversable;
-use Zend\Cache\Storage\StorageInterface;
-use Zend\Stdlib\RequestInterface;
-use Zend\Cache\Exception;
-use Zend\Cache\StorageFactory;
 
 class CacheManager
 {
@@ -33,7 +33,7 @@ class CacheManager
     public function __construct(RequestInterface $request)
     {
         // Zjistime si HASH stranky, pokud se nejedná o console request
-        if ($request instanceof \Zend\Console\Request) {
+        if ($request instanceof \Laminas\Console\Request) {
             $hashPost = null;
             $hashQuery = null;
         } else {

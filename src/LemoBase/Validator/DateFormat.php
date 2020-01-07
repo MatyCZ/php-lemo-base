@@ -2,10 +2,10 @@
 
 namespace LemoBase\Validator;
 
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\Validator\AbstractValidator;
+use Laminas\Validator\Exception;
 use Traversable;
-use Zend\Stdlib\ArrayUtils;
-use Zend\Validator\AbstractValidator;
-use Zend\Validator\Exception;
 
 class DateFormat extends AbstractValidator
 {

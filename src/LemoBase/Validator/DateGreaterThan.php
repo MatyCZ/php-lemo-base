@@ -2,9 +2,9 @@
 
 namespace LemoBase\Validator;
 
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\Validator\AbstractValidator;
 use Traversable;
-use Zend\Stdlib\ArrayUtils;
-use Zend\Validator\AbstractValidator;
 
 class DateGreaterThan extends AbstractValidator
 {
@@ -51,7 +51,7 @@ class DateGreaterThan extends AbstractValidator
      * Sets validator options
      *
      * @param  array|Traversable $options
-     * @throws \Zend\Validator\Exception\InvalidArgumentException
+     * @throws \Laminas\Validator\Exception\InvalidArgumentException
      */
     public function __construct($options = null)
     {
@@ -70,7 +70,7 @@ class DateGreaterThan extends AbstractValidator
         }
 
         if (!array_key_exists('min', $options)) {
-            throw new \Zend\Validator\Exception\InvalidArgumentException("Missing option 'min'");
+            throw new \Laminas\Validator\Exception\InvalidArgumentException("Missing option 'min'");
         }
 
         if (!array_key_exists('inclusive', $options)) {

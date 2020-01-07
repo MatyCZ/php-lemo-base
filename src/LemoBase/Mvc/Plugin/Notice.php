@@ -2,9 +2,9 @@
 
 namespace LemoBase\Mvc\Plugin;
 
-use Zend\Form\FieldsetInterface;
-use Zend\Form\FormInterface;
-use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\Form\FieldsetInterface;
+use Laminas\Form\FormInterface;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 
 class Notice extends FlashMessenger
 {

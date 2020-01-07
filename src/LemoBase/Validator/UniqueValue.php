@@ -2,7 +2,7 @@
 
 namespace LemoBase\Validator;
 
-use Zend\Validator\AbstractValidator;
+use Laminas\Validator\AbstractValidator;
 
 class UniqueValue extends AbstractValidator
 {

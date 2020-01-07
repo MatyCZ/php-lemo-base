@@ -2,7 +2,7 @@
 
 namespace LemoBase\Filter;
 
-use Zend\Filter\AbstractFilter;
+use Laminas\Filter\AbstractFilter;
 
 class Transliteration extends AbstractFilter
 {
@@ -12,7 +12,7 @@ class Transliteration extends AbstractFilter
     const UNIQUE_ID_PREFIX = '__LemoBase_Filter_Transliteration__';
 
     /**
-     * Defined by Zend\Filter\FilterInterface
+     * Defined by Laminas\Filter\FilterInterface
      *
      * @param  string $value
      * @return string

@@ -3,7 +3,7 @@
 namespace LemoBase\Validator;
 
 use Exception;
-use Zend\Validator\AbstractValidator;
+use Laminas\Validator\AbstractValidator;
 
 class IdentificationNumber extends AbstractValidator
 {

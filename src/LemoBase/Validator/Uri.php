@@ -5,7 +5,7 @@
  */
 namespace LemoBase\Validator;
 
-use Zend\Validator\AbstractValidator;
+use Laminas\Validator\AbstractValidator;
 
 class Uri extends AbstractValidator
 {
@@ -92,7 +92,7 @@ class Uri extends AbstractValidator
     {
         $this->setValue($value);
 
-        $uri = new \Zend\Uri\Uri($value);
+        $uri = new \Laminas\Uri\Uri($value);
 
         // Basic validation
         if(!filter_var($value, FILTER_VALIDATE_URL)) {

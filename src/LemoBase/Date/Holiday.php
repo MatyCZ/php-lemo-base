@@ -4,9 +4,9 @@ namespace LemoBase\Date;
 
 use DateInterval;
 use DateTime;
+use Laminas\Stdlib\ArrayUtils;
 use Locale;
 use Traversable;
-use Zend\Stdlib\ArrayUtils;
 
 class Holiday
 {

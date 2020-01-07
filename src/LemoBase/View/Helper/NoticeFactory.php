@@ -3,9 +3,9 @@
 namespace LemoBase\View\Helper;
 
 use Interop\Container\ContainerInterface;
-use Zend\Mvc\Controller\PluginManager as ControllerPluginManager;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Mvc\Controller\PluginManager as ControllerPluginManager;
+use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 class NoticeFactory implements FactoryInterface
 {

@@ -2,8 +2,8 @@
 
 namespace LemoBase\Cache;
 
-use Zend\Cache\Storage\StorageInterface;
-use Zend\Cache\Storage\TaggableInterface;
+use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Cache\Storage\TaggableInterface;
 
 class Cache
 {

@@ -2,8 +2,8 @@
 
 namespace LemoBase\Filter;
 
+use Laminas\Filter\AbstractFilter;
 use Traversable;
-use Zend\Filter\AbstractFilter;
 
 class StrPad extends AbstractFilter
 {

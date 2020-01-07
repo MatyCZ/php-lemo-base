@@ -2,8 +2,8 @@
 
 namespace LemoBase\View\Helper;
 
-use Zend\Router\RouteMatch as RouteMatchAbc;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\Router\RouteMatch as RouteMatchAbc;
+use Laminas\View\Helper\AbstractHelper;
 
 class RouteMatch extends AbstractHelper
 {

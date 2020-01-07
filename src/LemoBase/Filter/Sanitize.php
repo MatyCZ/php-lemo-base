@@ -2,11 +2,11 @@
 
 namespace LemoBase\Filter;
 
+use Laminas\Filter\AbstractFilter;
+use Laminas\Filter\StringToLower;
+use Laminas\Filter\StringTrim;
+use Laminas\Stdlib\ArrayUtils;
 use Traversable;
-use Zend\Filter\AbstractFilter;
-use Zend\Filter\StringToLower;
-use Zend\Filter\StringTrim;
-use Zend\Stdlib\ArrayUtils;
 
 class Sanitize extends AbstractFilter
 {
@@ -82,7 +82,7 @@ class Sanitize extends AbstractFilter
     }
 
     /**
-     * Defined by Zend\Filter\FilterInterface
+     * Defined by Laminas\Filter\FilterInterface
      *
      * @todo improve docblock descriptions
      *

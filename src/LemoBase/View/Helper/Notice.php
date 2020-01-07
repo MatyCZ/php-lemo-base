@@ -2,10 +2,9 @@
 
 namespace LemoBase\View\Helper;
 
+use Laminas\Filter\StripNewlines as FilterStripNewLines;
+use Laminas\View\Helper\AbstractHelper;
 use LemoBase\Mvc\Plugin\Notice as ControllerPluginNotice;
-use Zend\Filter\StripNewlines as FilterStripNewLines;
-use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
-use Zend\View\Helper\AbstractHelper;
 
 class Notice extends AbstractHelper
 {

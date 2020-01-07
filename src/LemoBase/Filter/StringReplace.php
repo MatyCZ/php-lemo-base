@@ -2,9 +2,9 @@
 
 namespace LemoBase\Filter;
 
+use Laminas\Filter\AbstractFilter;
+use Laminas\Filter\Exception;
 use Traversable;
-use Zend\Filter\AbstractFilter;
-use Zend\Filter\Exception;
 
 class StringReplace extends AbstractFilter
 {

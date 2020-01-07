@@ -4,7 +4,7 @@ namespace LemoBase\Facade;
 
 use Doctrine\ORM\EntityManager;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 abstract class AbstractFacade
 {
@@ -14,12 +14,12 @@ abstract class AbstractFacade
     protected $entityManager;
 
     /**
-     * @var \Zend\ServiceManager\ServiceLocatorInterface
+     * @var \Laminas\ServiceManager\ServiceLocatorInterface
      */
     protected $serviceManager;
 
     /**
-     * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager
+     * @param \Laminas\ServiceManager\ServiceLocatorInterface $serviceManager
      */
     public function __construct(ServiceLocatorInterface $serviceManager)
     {
@@ -80,7 +80,7 @@ abstract class AbstractFacade
     /**
      * Set service manager instance
      *
-     * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceManager
+     * @param \Laminas\ServiceManager\ServiceLocatorInterface $serviceManager
      * @return AbstractFacade
      */
     public function setServiceManager(ServiceLocatorInterface $serviceManager)
@@ -93,7 +93,7 @@ abstract class AbstractFacade
     /**
      * Retrieve service manager instance
      *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     * @return \Laminas\ServiceManager\ServiceLocatorInterface
      */
     public function getServiceManager()
     {

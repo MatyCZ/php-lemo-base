@@ -2,8 +2,8 @@
 
 namespace LemoBase\Filter;
 
-use Zend\Filter\AbstractFilter;
-use Zend\Filter\StringTrim;
+use Laminas\Filter\AbstractFilter;
+use Laminas\Filter\StringTrim;
 
 class BankAccount extends AbstractFilter
 {
@@ -16,7 +16,7 @@ class BankAccount extends AbstractFilter
     }
 
     /**
-     * Defined by Zend\Filter\FilterInterface
+     * Defined by Laminas\Filter\FilterInterface
      *
      * @param  string $value
      * @return string

@@ -3,8 +3,8 @@
 namespace LemoBase\Filter;
 
 use DateTime;
+use Laminas\Filter\AbstractFilter;
 use Traversable;
-use Zend\Filter\AbstractFilter;
 
 class DateTimeObject extends AbstractFilter
 {
