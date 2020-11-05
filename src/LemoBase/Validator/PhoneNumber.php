@@ -8,7 +8,7 @@ class PhoneNumber extends AbstractValidator
 {
     const INVALID                = 'phoneNumberInvalid';
     const NO_MATCH               = 'phoneNumberNoMatch';
-    const NO_MATCH_INTERNATIONAL = 'phoneNumberNoMatch';
+    const NO_MATCH_INTERNATIONAL = 'phoneNumberNoMatchInternational';
     const UNSUPPORTED            = 'phoneNumberUnsupported';
 
     /**
