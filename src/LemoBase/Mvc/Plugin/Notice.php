@@ -2,6 +2,7 @@
 
 namespace LemoBase\Mvc\Plugin;
 
+use Laminas\Form\Element\Collection;
 use Laminas\Form\FieldsetInterface;
 use Laminas\Form\FormInterface;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
@@ -67,7 +68,32 @@ class Notice extends FlashMessenger
     {
         $names = [];
         foreach ($errorMessages as $elementName => $elementErrorMessages) {
-            if ($fieldset->has($elementName)) {
+            if ($fieldset instanceof Collection) {
+                foreach ($errorMessages as $index => $errorMessage) {
+
+                    if (is_array($errorMessage)) {
+                        $name = $index;
+
+                        // Create element name for fieldset element
+                        if (!empty($parentNames)) {
+                            $name = implode(' > ', $parentNames);
+                        }
+
+                        $name = strip_tags($name);
+                        $name = trim($name);
+
+                        $namesNew = [];
+                        foreach ($errorMessage as $errKey => $errMessage) {
+                            $namesNew[$name][$errKey] = $errMessage;
+                        }
+
+                        $names = array_merge(
+                            $names,
+                            $namesNew
+                        );
+                    }
+                }
+            } elseif ($fieldset->has($elementName)) {
                 $element = $fieldset->get($elementName);
 
                 if ($element instanceof FieldsetInterface) {
@@ -75,7 +101,16 @@ class Notice extends FlashMessenger
                         $parentNames[] = $element->getLabel();
                     }
 
-                    $names = array_merge($names, $this->createFlattenMessages($element, $elementErrorMessages, $parentNames));
+                    $namesNew = $this->createFlattenMessages(
+                        $element,
+                        $elementErrorMessages,
+                        $parentNames
+                    );
+
+                    $names = array_merge(
+                        $names,
+                        $namesNew
+                    );
                 } else {
 
                     // Create element name
