@@ -9,7 +9,6 @@
     ],
     "homepage": "https://github.com/MatyCZ/php-lemo-base",
     "require": {
-        "laminas/laminas-cache": "^2.0",
         "laminas/laminas-dependency-plugin": "^2.0",
         "laminas/laminas-filter": "^2.0",
         "laminas/laminas-form": "^2.0 || ^3.0",
