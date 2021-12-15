@@ -4,38 +4,29 @@ namespace LemoBase\Validator;
 
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Validator\AbstractValidator;
+use Laminas\Validator\Exception;
 use Traversable;
 
 class DateLessThan extends AbstractValidator
 {
-    const NOT_LESS           = 'notDateLessThan';
-    const NOT_LESS_INCLUSIVE = 'notDateLessThanInclusive';
+    public const NOT_LESS           = 'notDateLessThan';
+    public const NOT_LESS_INCLUSIVE = 'notDateLessThanInclusive';
 
-    /**
-     * Validation failure message template definitions
-     *
-     * @var array
-     */
-    protected $messageTemplates = [
+    protected array $messageTemplates = [
         self::NOT_LESS           => "The input is not less than date '%max%'",
         self::NOT_LESS_INCLUSIVE => "The input is not less or equal than date '%max%'",
     ];
 
-    /**
-     * Additional variables available for validation failure messages
-     *
-     * @var array
-     */
-    protected $messageVariables = [
+    protected array $messageVariables = [
         'max' => 'max',
     ];
 
     /**
      * Maximum value as date or field name
      *
-     * @var mixed
+     * @var string
      */
-    protected $max;
+    protected string $max;
 
     /**
      * Whether to do inclusive comparisons, allowing equivalence to max
@@ -43,21 +34,22 @@ class DateLessThan extends AbstractValidator
      * If false, then strict comparisons are done, and the value may equal
      * the max option
      *
-     * @var boolean
+     * @var bool
      */
-    protected $inclusive;
+    protected bool $inclusive = false;
 
     /**
      * Sets validator options
      *
      * @param  array|Traversable $options
-     * @throws \Laminas\Validator\Exception\InvalidArgumentException
+     * @throws Exception\InvalidArgumentException
      */
     public function __construct($options = null)
     {
         if ($options instanceof Traversable) {
             $options = ArrayUtils::iteratorToArray($options);
         }
+
         if (!is_array($options)) {
             $options = func_get_args();
             $temp['max'] = array_shift($options);
@@ -70,7 +62,7 @@ class DateLessThan extends AbstractValidator
         }
 
         if (!array_key_exists('max', $options)) {
-            throw new \Laminas\Validator\Exception\InvalidArgumentException("Missing option 'max'");
+            throw new Exception\InvalidArgumentException("Missing option 'max'");
         }
 
         if (!array_key_exists('inclusive', $options)) {
@@ -84,47 +76,47 @@ class DateLessThan extends AbstractValidator
     }
 
     /**
-     * Returns the max option
-     *
-     * @return mixed
-     */
-    public function getMax()
-    {
-        return $this->max;
-    }
-
-    /**
      * Sets the max option
      *
-     * @param  mixed $max
-     * @return LessThan Provides a fluent interface
+     * @param  string $max
+     * @return self
      */
-    public function setMax($max)
+    public function setMax(string $max): self
     {
         $this->max = $max;
         return $this;
     }
 
     /**
-     * Returns the inclusive option
+     * Returns the max option
      *
-     * @return boolean
+     * @return string
      */
-    public function getInclusive()
+    public function getMax(): string
     {
-        return $this->inclusive;
+        return $this->max;
     }
 
     /**
      * Sets the inclusive option
      *
-     * @param  boolean $inclusive
-     * @return LessThan Provides a fluent interface
+     * @param  bool $inclusive
+     * @return self
      */
-    public function setInclusive($inclusive)
+    public function setInclusive(bool $inclusive): self
     {
         $this->inclusive = $inclusive;
         return $this;
+    }
+
+    /**
+     * Returns the inclusive option
+     *
+     * @return bool
+     */
+    public function getInclusive(): bool
+    {
+        return $this->inclusive;
     }
 
     /**
@@ -132,9 +124,9 @@ class DateLessThan extends AbstractValidator
      * when the inclusive option is true
      *
      * @param  mixed $value
-     * @return boolean
+     * @return bool
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
         $this->setValue($value);
 

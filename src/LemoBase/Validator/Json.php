@@ -6,30 +6,17 @@ use Laminas\Validator\AbstractValidator;
 
 class Json extends AbstractValidator
 {
-    const INVALID = 'jsonInvalid';
+    public const INVALID = 'jsonInvalid';
 
-    /**
-     * Validation failure message template definitions
-     *
-     * @var array
-     */
-    protected $messageTemplates = [
+    protected array $messageTemplates = [
         self::INVALID => "Json is invalid: %reason%",
     ];
 
-    /**
-     * Additional variables available for validation failure messages
-     *
-     * @var array
-     */
-    protected $messageVariables = [
+    protected array $messageVariables = [
         'reason' => 'reason',
     ];
 
-    /**
-     * @var string
-     */
-    protected $reason;
+    protected ?string $reason = null;
 
     /**
      * Returns true if and only if $value is valid JSON
@@ -37,7 +24,7 @@ class Json extends AbstractValidator
      * @param string $value
      * @return bool
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
         if (empty($value)) {
             return true;
@@ -46,7 +33,9 @@ class Json extends AbstractValidator
         json_decode($value);
         if (JSON_ERROR_NONE !== json_last_error()) {
             $this->error(self::INVALID);
+
             $errorMessage = json_last_error_msg();
+
             if (!empty($errorMessage)) {
                 $this->reason = $errorMessage;
             } else {

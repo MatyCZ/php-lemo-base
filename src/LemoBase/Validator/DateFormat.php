@@ -7,34 +7,28 @@ use Laminas\Validator\AbstractValidator;
 use Laminas\Validator\Exception;
 use Traversable;
 
+use function array_key_exists;
+use function array_shift;
+use function date;
+use function func_get_args;
+use function is_array;
+use function preg_replace;
+use function str_replace;
+use function strtotime;
+
 class DateFormat extends AbstractValidator
 {
-    const INVALID_FORMAT = 'invalidFormat';
+    public const INVALID_FORMAT = 'invalidFormat';
 
-    /**
-     * Validation failure message template definitions
-     *
-     * @var array
-     */
-    protected $messageTemplates = [
+    protected array $messageTemplates = [
         self::INVALID_FORMAT => "Date '%value%' doesn`t match format '%format%'",
     ];
 
-    /**
-     * Additional variables available for validation failure messages
-     *
-     * @var array
-     */
-    protected $messageVariables = [
+    protected array $messageVariables = [
         'format' => 'format',
     ];
 
-    /**
-     * Date firnat
-     *
-     * @var mixed
-     */
-    protected $format;
+    protected string $format;
 
     /**
      * Sets validator options
@@ -63,24 +57,13 @@ class DateFormat extends AbstractValidator
         parent::__construct($options);
     }
 
-    /**
-     * Set format
-     *
-     * @param  mixed $forma
-     * @return $this
-     */
-    public function setFormat($forma)
+    public function setFormat(string $format): self
     {
-        $this->format = $forma;
+        $this->format = $format;
         return $this;
     }
 
-    /**
-     * Returns format
-     *
-     * @return mixed
-     */
-    public function getFormat()
+    public function getFormat(): string
     {
         return $this->format;
     }
@@ -89,10 +72,11 @@ class DateFormat extends AbstractValidator
      * Returns true if and only if $value is greater than max option, inclusively
      * when the inclusive option is true
      *
-     * @param  mixed $value
-     * @return boolean
+     * @param mixed $value
+     * @param mixed $context
+     * @return bool
      */
-    public function isValid($value, $context = null)
+    public function isValid($value, $context = null): bool
     {
         $this->setValue($value);
 

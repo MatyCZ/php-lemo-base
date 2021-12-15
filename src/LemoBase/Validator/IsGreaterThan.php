@@ -2,22 +2,33 @@
 
 namespace LemoBase\Validator;
 
+use ArrayAccess;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Validator\AbstractValidator;
+use Laminas\Validator\Exception;
 use Traversable;
+
+use function array_key_exists;
+use function get_class;
+use function gettype;
+use function is_array;
+use function is_object;
+use function key;
+use function sprintf;
+use function var_export;
 
 class IsGreaterThan extends AbstractValidator
 {
-    const MISSING_TOKEN = 'missingToken';
-    const NOT_GREATER = 'notGreaterThan';
-    const NOT_GREATER_INCLUSIVE = 'notGreaterThanInclusive';
+    public const MISSING_TOKEN = 'missingToken';
+    public const NOT_GREATER = 'notGreaterThan';
+    public const NOT_GREATER_INCLUSIVE = 'notGreaterThanInclusive';
 
     /**
      * Validation failure message template definitions
      *
      * @var array
      */
-    protected $messageTemplates = [
+    protected array $messageTemplates = [
         self::MISSING_TOKEN         => 'No token was provided to match against',
         self::NOT_GREATER           => "The input is not greater than '%token%'",
         self::NOT_GREATER_INCLUSIVE => "The input is not greater or equal than '%token%'",
@@ -28,7 +39,7 @@ class IsGreaterThan extends AbstractValidator
      *
      * @var array
      */
-    protected $messageVariables = [
+    protected array $messageVariables = [
         'token' => 'tokenString',
     ];
 
@@ -40,16 +51,16 @@ class IsGreaterThan extends AbstractValidator
     protected $token;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $tokenString;
+    protected ?string $tokenString = null;
 
     /**
      * Whether to do inclusive comparisons, allowing equivalence to max
      *
      * @var bool
      */
-    protected $inclusive = false;
+    protected bool $inclusive = false;
 
     /**
      * Sets validator options
@@ -76,24 +87,37 @@ class IsGreaterThan extends AbstractValidator
     }
 
     /**
+     * Sets the inclusive option
+     *
+     * @param  bool $inclusive
+     * @return self
+     */
+    public function setInclusive(bool $inclusive): self
+    {
+        $this->inclusive = $inclusive;
+        return $this;
+    }
+
+    /**
      * Returns the inclusive option
      *
-     * @return boolean
+     * @return bool
      */
-    public function getInclusive()
+    public function getInclusive(): bool
     {
         return $this->inclusive;
     }
 
     /**
-     * Sets the inclusive option
+     * Set token against which to compare
      *
-     * @param  boolean $inclusive
-     * @return GreaterThan Provides a fluent interface
+     * @param  mixed $token
+     * @return self
      */
-    public function setInclusive($inclusive)
+    public function setToken($token): self
     {
-        $this->inclusive = $inclusive;
+        $this->tokenString = (is_array($token) ? var_export($token, true) : (string) $token);
+        $this->token       = $token;
         return $this;
     }
 
@@ -108,38 +132,28 @@ class IsGreaterThan extends AbstractValidator
     }
 
     /**
-     * Set token against which to compare
-     *
-     * @param  mixed $token
-     * @return Identical
-     */
-    public function setToken($token)
-    {
-        $this->tokenString = (is_array($token) ? var_export($token, true) : (string) $token);
-        $this->token       = $token;
-        return $this;
-    }
-
-    /**
      * Returns true if and only if $value is greater than max option, inclusively
      * when the inclusive option is true
      *
-     * @param  mixed $value
-     * @return boolean
+     * @param mixed $value
+     * @param mixed $context
+     * @return bool
      */
-    public function isValid($value, $context = null)
+    public function isValid($value, $context = null): bool
     {
         $this->setValue($value);
 
         $token = $this->getToken();
 
         if (null !== $context) {
-            if (! is_array($context) && ! ($context instanceof ArrayAccess)) {
-                throw new Exception\InvalidArgumentException(sprintf(
-                    'Context passed to %s must be array, ArrayObject or null; received "%s"',
-                    __METHOD__,
-                    is_object($context) ? get_class($context) : gettype($context)
-                ));
+            if (!is_array($context) && !($context instanceof ArrayAccess)) {
+                throw new Exception\InvalidArgumentException(
+                    sprintf(
+                        'Context passed to %s must be array, ArrayObject or null; received "%s"',
+                        __METHOD__,
+                        is_object($context) ? get_class($context) : gettype($context)
+                    )
+                );
             }
 
             if (is_array($token)) {
@@ -155,7 +169,7 @@ class IsGreaterThan extends AbstractValidator
 
             // if $token is an array it means the above loop didn't went all the way down to the leaf,
             // so the $token structure doesn't match the $context structure
-            if (is_array($token) || ! isset($context[$token])) {
+            if (is_array($token) || !isset($context[$token])) {
                 $token = $this->getToken();
             } else {
                 $token = $context[$token];

@@ -4,19 +4,22 @@ namespace LemoBase\Validator;
 
 use Laminas\Validator\AbstractValidator;
 
+use function array_key_exists;
+use function is_string;
+use function preg_match;
+use function str_pad;
+
 class BankAccount extends AbstractValidator
 {
-    const INVALID_INPUT = 'invInput';
-    const INVALID_ACCOUNT_PREFIX = 'invPrefix';
-    const INVALID_ACCOUNT_NUMBER = 'invAccount';
-    const INVALID_BANK_CODE = 'invBankCode';
+    public const INVALID_INPUT = 'invInput';
+    public const INVALID_ACCOUNT_PREFIX = 'invPrefix';
+    public const INVALID_ACCOUNT_NUMBER = 'invAccount';
+    public const INVALID_BANK_CODE = 'invBankCode';
 
     /**
-     * Číselník bankovních kóduů k datu 1.2.2014 (zdroj ČNB)
-     *
-     * @var array
+     * Číselník bankovních kódů k datu 1.2.2014 (zdroj ČNB)
      */
-    protected $bankCodes = array(
+    protected array $bankCodes = [
         '0100' => 'Komerční banka, a.s.',
         '0300' => 'Československá obchodní banka, a.s.',
         '0600' => 'GE Money Bank, a.s.',
@@ -67,42 +70,39 @@ class BankAccount extends AbstractValidator
         '8200' => 'PRIVAT BANK AG der Raiffeisenlandesbank Oberösterreich v České republice',
         // Přidáno speciálně pro KÚPK, neexistující bankovní kód
         '9999' => 'Fiktivní banka',
-    );
+    ];
 
-    /**
-     * @var array
-     */
-    protected $messageTemplates = array(
+    protected array $messageTemplates = [
         self::INVALID_INPUT => 'Invalid input',
         self::INVALID_ACCOUNT_PREFIX => 'Invalid bank account prefix',
         self::INVALID_ACCOUNT_NUMBER => 'Invalid bank account main part',
         self::INVALID_BANK_CODE => 'Invalid bank code',
-    );
+    ];
 
     /**
      * @param  string $value
-     * @return boolean
+     * @return bool
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
         if (!is_string($value)) {
-            $this->error(self::INVALID);
-            return false;
-        }
-
-        $this->setValue($value);
-        if(!preg_match('#^\s*((\d{0,6})-)?(\d{1,10})\/(\d{4})\s*$#', $value, $matches)) {
             $this->error(self::INVALID_INPUT);
             return false;
         }
 
-        list( , , $accountPrefix, $accountNo, $bankCode) = $matches;
+        $this->setValue($value);
+        if (!preg_match('#^\s*((\d{0,6})-)?(\d{1,10})\/(\d{4})\s*$#', $value, $matches)) {
+            $this->error(self::INVALID_INPUT);
+            return false;
+        }
+
+        [, , $accountPrefix, $accountNo, $bankCode] = $matches;
 
         // validace předčíslí
-        if( ! empty($accountPrefix)) {
+        if (!empty($accountPrefix)) {
             $accountPrefix = str_pad($accountPrefix, 6, '0', STR_PAD_LEFT);
             $sum = 0;
-            foreach (array(10, 5, 8, 4, 2, 1) as $index => $weight) {
+            foreach ([10, 5, 8, 4, 2, 1] as $index => $weight) {
                 $sum += $accountPrefix[$index] * $weight;
             }
 
@@ -114,8 +114,9 @@ class BankAccount extends AbstractValidator
 
         // validace čísla účtu
         $accountNo = str_pad($accountNo, 10, '0', STR_PAD_LEFT);
+
         $sum = 0;
-        foreach (array(6, 3, 7, 9, 10, 5, 8, 4, 2, 1) as $index => $weight) {
+        foreach ([6, 3, 7, 9, 10, 5, 8, 4, 2, 1] as $index => $weight) {
             $sum += $accountNo[$index] * $weight;
         }
 
@@ -125,26 +126,11 @@ class BankAccount extends AbstractValidator
         }
 
         // validace kódu banky
-        if(!array_key_exists($bankCode, $this->bankCodes)) {
+        if (!array_key_exists($bankCode, $this->bankCodes)) {
             $this->error(self::INVALID_BANK_CODE);
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Vrátí název banky dle kódu, nebo prázdný string
-     *
-     * @param string $code
-     * @return string
-     */
-    public function getBankName($code)
-    {
-        if(empty($code) || !isset($this->bankCodes[$code])) {
-            return '';
-        }
-
-        return $this->bankCodes($code);
     }
 }

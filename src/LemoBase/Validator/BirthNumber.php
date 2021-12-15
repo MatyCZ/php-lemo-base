@@ -5,32 +5,33 @@ namespace LemoBase\Validator;
 use Exception;
 use Laminas\Validator\AbstractValidator;
 
+use function array_key_exists;
+use function checkdate;
+use function is_int;
+use function is_string;
+use function preg_match;
+use function preg_quote;
+use function sprintf;
+
 class BirthNumber extends AbstractValidator
 {
-    const INVALID = 'intInvalid';
-    const NOT_BIRTHNUMBER = 'notBirthNumber';
+    public const INVALID = 'intInvalid';
+    public const NOT_BIRTHNUMBER = 'notBirthNumber';
 
-    /**
-     * @var array
-     */
-    protected $messageTemplates = array(
+    protected array $messageTemplates = [
         self::INVALID => "Invalid type given. String or integer expected",
         self::NOT_BIRTHNUMBER => "The value does not appear to be a birth number",
-    );
+    ];
 
     /**
      * Excluded regular expression patterns without delimiter
      *
      * ['0000$', '9999$']
-     *
-     * @var array
      */
-    protected $exclude = [];
+    protected array $exclude = [];
 
     /**
-     * BirthNumber constructor.
-     *
-     * @param null|array $options
+     * @throws Exception
      */
     public function __construct(array $options = [])
     {
@@ -47,9 +48,9 @@ class BirthNumber extends AbstractValidator
      * @param  string|integer $value
      * @return boolean
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
-        if (!is_string($value) && !is_int($value)) {
+        if (!is_int($value) && !is_string($value)) {
             $this->error(self::INVALID);
             return false;
         }
@@ -62,12 +63,12 @@ class BirthNumber extends AbstractValidator
         }
 
         $this->setValue($value);
-        if(!preg_match('~^\s*(\d\d)(\d\d)(\d\d)(\d\d\d)(\d?)\s*$~', preg_quote($value, '~'), $matches)) {
+        if (!preg_match('~^\s*(\d\d)(\d\d)(\d\d)(\d\d\d)(\d?)\s*$~', preg_quote($value, '~'), $matches)) {
             $this->error(self::NOT_BIRTHNUMBER);
             return false;
         }
 
-        list(, $year, $month, $day, $ext, $c) = $matches;
+        [, $year, $month, $day, $ext, $c] = $matches;
 
         // Do roku 1954 pridelovano 9 mistne RC nelze overit
         if ($c === '') {
@@ -76,7 +77,9 @@ class BirthNumber extends AbstractValidator
 
         // Kontrolni cislice
         $mod = ($year . $month . $day . $ext) % 11;
-        if ($mod === 10) $mod = 0;
+        if ($mod === 10) {
+            $mod = 0;
+        }
         if ($mod !== (int) $c) {
             $this->error(self::NOT_BIRTHNUMBER);
             return false;
@@ -86,9 +89,13 @@ class BirthNumber extends AbstractValidator
         $year += $year < 54 ? 2000 : 1900;
 
         // K mesici muze byt pricteno 20, 50 nebo 70
-        if ($month > 70 && $year > 2003) $month -= 70;
-        elseif ($month > 50) $month -= 50;
-        elseif ($month > 20 && $year > 2003) $month -= 20;
+        if ($month > 70 && $year > 2003) {
+            $month -= 70;
+        } elseif ($month > 50) {
+            $month -= 50;
+        } elseif ($month > 20 && $year > 2003) {
+            $month -= 20;
+        }
 
         if (!checkdate($month, $day, $year)) {
             $this->error(self::NOT_BIRTHNUMBER);
@@ -101,10 +108,11 @@ class BirthNumber extends AbstractValidator
     /**
      * Set excluded patterns
      *
-     * @param  array $exclude
+     * @param array $exclude
      * @return $this
+     * @throws Exception
      */
-    public function setExclude(array $exclude)
+    public function setExclude(array $exclude): self
     {
         foreach ($exclude as $pattern) {
             $this->testPregPattern($pattern);
@@ -120,10 +128,15 @@ class BirthNumber extends AbstractValidator
      * @param  string $pattern
      * @throws Exception
      */
-    protected function testPregPattern($pattern)
+    protected function testPregPattern(string $pattern): void
     {
-        if (false === @preg_match('~' . $pattern . '~', null)) {
-            throw new Exception(sprintf('Invalid regular expression pattern `%s` in options', $pattern));
+        if (false === @preg_match('~' . $pattern . '~', "")) {
+            throw new Exception(
+                sprintf(
+                    'Invalid regular expression pattern `%s` in options',
+                    $pattern
+                )
+            );
         }
     }
 }

@@ -4,41 +4,31 @@ namespace LemoBase\Validator;
 
 use Laminas\Validator\AbstractValidator;
 
+use function array_key_exists;
+use function is_array;
+use function is_int;
+use function is_string;
+
 class UniqueValue extends AbstractValidator
 {
-    const INVALID = 'valueInvalid';
-    const NOT_UNIQUE = 'valueNotUnique';
+    public const INVALID = 'valueInvalid';
+    public const NOT_UNIQUE = 'valueNotUnique';
 
-    /**
-     * @var bool
-     */
-    protected $caseSensitive = false;
-
-    /**
-     * @var array
-     */
-    protected $haystack = array();
-
-    /**
-     * @var array
-     */
-    protected $messageTemplates = array(
+    protected array $messageTemplates = [
         self::INVALID => "Invalid type given. String or integer expected",
         self::NOT_UNIQUE => "Value must be unique",
-    );
+    ];
 
-    /**
-     * Set validator options
-     *
-     * @param array $options
-     */
+    protected bool $caseSensitive = false;
+    protected array $haystack = [];
+
     public function __construct($options = array())
     {
-        if(array_key_exists('haystack', $options) && is_array($options['haystack'])) {
+        if (array_key_exists('haystack', $options) && is_array($options['haystack'])) {
             $this->setHaystack($options['haystack']);
         }
 
-        if(array_key_exists('case_sensitive', $options) && true === $options['case_sensitive']) {
+        if (array_key_exists('case_sensitive', $options) && true === $options['case_sensitive']) {
             $this->setCaseSensitive(true);
         }
 
@@ -51,18 +41,18 @@ class UniqueValue extends AbstractValidator
      * @param  string $value
      * @return bool
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
         if (!is_string($value) && !is_int($value)) {
             $this->error(self::INVALID);
             return false;
         }
 
-        if(empty($this->haystack)) {
+        if (empty($this->haystack)) {
             return true;
         }
 
-        if($this->inArray($value, $this->haystack)) {
+        if ($this->inArray($value, $this->haystack)) {
             $this->error(self::NOT_UNIQUE);
             return false;
         }
@@ -77,7 +67,7 @@ class UniqueValue extends AbstractValidator
      * @param  string $encoding
      * @return string
      */
-    protected function toLower($string, $encoding = 'UTF-8')
+    protected function toLower(string $string, string $encoding = 'UTF-8'): string
     {
         return mb_strtolower($string, $encoding);
     }
@@ -88,7 +78,7 @@ class UniqueValue extends AbstractValidator
      * @param  array $array
      * @return array
      */
-    protected function arrayToLower(array $array)
+    protected function arrayToLower(array $array): array
     {
         foreach ($array as &$value) {
             switch (true) {
@@ -113,13 +103,11 @@ class UniqueValue extends AbstractValidator
      * @param  bool         $strict
      * @return bool
      */
-    protected function inArray($needle, $haystack, $caseSensitive = false, $strict = false)
+    protected function inArray($needle, $haystack, bool $caseSensitive = false, bool $strict = false): bool
     {
         switch ($caseSensitive) {
             case true:
                 return in_array($needle, $haystack, $strict);
-                break;
-
             default:
             case false:
                 if (is_array($needle)) {
@@ -127,17 +115,16 @@ class UniqueValue extends AbstractValidator
                 } else {
                     return in_array($this->toLower($needle), $this->arrayToLower($haystack), $strict);
                 }
-                break;
         }
     }
 
     /**
      * Set case sensitive comparsion
      *
-     * @param  boolean $caseSensitive
-     * @return UniqueValue
+     * @param  bool $caseSensitive
+     * @return self
      */
-    public function setCaseSensitive($caseSensitive)
+    public function setCaseSensitive(bool $caseSensitive): self
     {
         $this->caseSensitive = $caseSensitive;
 
@@ -148,9 +135,9 @@ class UniqueValue extends AbstractValidator
      * Set haystack for comparsion
      *
      * @param  array $values
-     * @return UniqueValue
+     * @return self
      */
-    public function setHaystack(array $values)
+    public function setHaystack(array $values): self
     {
         $this->haystack = $values;
 

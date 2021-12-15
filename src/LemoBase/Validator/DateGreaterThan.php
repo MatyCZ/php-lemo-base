@@ -4,38 +4,35 @@ namespace LemoBase\Validator;
 
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Validator\AbstractValidator;
+use Laminas\Validator\Exception;
 use Traversable;
+
+use function array_key_exists;
+use function array_shift;
+use function func_get_args;
+use function is_array;
+use function strtotime;
 
 class DateGreaterThan extends AbstractValidator
 {
-    const NOT_GREATER           = 'notDateGreaterThan';
-    const NOT_GREATER_INCLUSIVE = 'notDateGreaterThanInclusive';
+    public const NOT_GREATER           = 'notDateGreaterThan';
+    public const NOT_GREATER_INCLUSIVE = 'notDateGreaterThanInclusive';
 
-    /**
-     * Validation failure message template definitions
-     *
-     * @var array
-     */
-    protected $messageTemplates = [
+    protected array $messageTemplates = [
         self::NOT_GREATER           => "The input is not greater than date '%min%'",
         self::NOT_GREATER_INCLUSIVE => "The input is not greater or equal than date '%min%'",
     ];
 
-    /**
-     * Additional variables available for validation failure messages
-     *
-     * @var array
-     */
-    protected $messageVariables = [
+    protected array $messageVariables = [
         'min' => 'min',
     ];
 
     /**
      * Maximum value as date or field name
      *
-     * @var mixed
+     * @var string
      */
-    protected $min;
+    protected string $min;
 
     /**
      * Whether to do inclusive comparisons, allowing equivalence to min
@@ -43,21 +40,22 @@ class DateGreaterThan extends AbstractValidator
      * If false, then strict comparisons are done, and the value may equal
      * the max option
      *
-     * @var boolean
+     * @var bool
      */
-    protected $inclusive;
+    protected bool $inclusive = false;
 
     /**
      * Sets validator options
      *
      * @param  array|Traversable $options
-     * @throws \Laminas\Validator\Exception\InvalidArgumentException
+     * @throws Exception\InvalidArgumentException
      */
     public function __construct($options = null)
     {
         if ($options instanceof Traversable) {
             $options = ArrayUtils::iteratorToArray($options);
         }
+
         if (!is_array($options)) {
             $options = func_get_args();
             $temp['min'] = array_shift($options);
@@ -70,7 +68,7 @@ class DateGreaterThan extends AbstractValidator
         }
 
         if (!array_key_exists('min', $options)) {
-            throw new \Laminas\Validator\Exception\InvalidArgumentException("Missing option 'min'");
+            throw new Exception\InvalidArgumentException("Missing option 'min'");
         }
 
         if (!array_key_exists('inclusive', $options)) {
@@ -84,47 +82,47 @@ class DateGreaterThan extends AbstractValidator
     }
 
     /**
-     * Returns the max option
+     * Sets the min option
      *
-     * @return mixed
+     * @param  string $min
+     * @return self
      */
-    public function getMin()
-    {
-        return $this->min;
-    }
-
-    /**
-     * Sets the max option
-     *
-     * @param  mixed $min
-     * @return GreaterThan Provides a fluent interface
-     */
-    public function setMin($min)
+    public function setMin(string $min): self
     {
         $this->min = $min;
         return $this;
     }
 
     /**
-     * Returns the inclusive option
+     * Returns the min option
      *
-     * @return boolean
+     * @return string
      */
-    public function getInclusive()
+    public function getMin(): string
     {
-        return $this->inclusive;
+        return $this->min;
     }
 
     /**
      * Sets the inclusive option
      *
-     * @param  boolean $inclusive
-     * @return GreaterThan Provides a fluent interface
+     * @param  bool $inclusive
+     * @return self
      */
-    public function setInclusive($inclusive)
+    public function setInclusive(bool $inclusive): self
     {
         $this->inclusive = $inclusive;
         return $this;
+    }
+
+    /**
+     * Returns the inclusive option
+     *
+     * @return bool
+     */
+    public function getInclusive(): bool
+    {
+        return $this->inclusive;
     }
 
     /**
@@ -132,9 +130,9 @@ class DateGreaterThan extends AbstractValidator
      * when the inclusive option is true
      *
      * @param  mixed $value
-     * @return boolean
+     * @return bool
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
         $this->setValue($value);
 

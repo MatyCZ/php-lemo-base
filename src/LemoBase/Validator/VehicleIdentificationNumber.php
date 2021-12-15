@@ -3,30 +3,35 @@
 namespace LemoBase\Validator;
 
 use Laminas\Validator\AbstractValidator;
+use Traversable;
+
+use function array_key_exists;
+use function boolval;
+use function intval;
+use function is_numeric;
+use function is_string;
+use function mb_strlen;
+use function mb_substr;
+use function preg_match;
+use function strcmp;
 
 class VehicleIdentificationNumber extends AbstractValidator
 {
-    const VIN_INVALID        = 'vinInvalid';
-    const VIN_INVALID_CHARS  = 'vinInvalidChars';
-    const VIN_INVALID_LENGTH = 'vinInvalidLength';
-    const VIN_INVALID_CN     = 'vinInvalidCn';
-    const VIN_TOO_LONG       = 'vinTooLong';
+    public const VIN_INVALID        = 'vinInvalid';
+    public const VIN_INVALID_CHARS  = 'vinInvalidChars';
+    public const VIN_INVALID_LENGTH = 'vinInvalidLength';
+    public const VIN_INVALID_CN     = 'vinInvalidCn';
+    public const VIN_TOO_LONG       = 'vinTooLong';
 
-    /**
-     * @var array
-     */
-    protected $messageTemplates = array(
+    protected array $messageTemplates = [
         self::VIN_INVALID        => "Invalid type given. String expected",
         self::VIN_INVALID_CHARS  => "The value contains invalid characters",
         self::VIN_INVALID_LENGTH => "Invalid value length",
         self::VIN_INVALID_CN     => "Invalid control number",
         self::VIN_TOO_LONG       => "The value is greater than 17 characters"
-    );
+    ];
 
-    /**
-     * @var array
-     */
-    protected $charValues = [
+    protected array $charValues = [
         'A' => 1,
         'J' => 1,
         'B' => 2,
@@ -52,10 +57,7 @@ class VehicleIdentificationNumber extends AbstractValidator
         'Z' => 9,
     ];
 
-    /**
-     * @var array
-     */
-    protected $charVeights = [
+    protected array $charVeights = [
         1  => 8,
         2  => 7,
         3  => 6,
@@ -79,21 +81,19 @@ class VehicleIdentificationNumber extends AbstractValidator
      *
      * @var bool
      */
-    protected $validateCn = false;
+    protected bool $validateCn = false;
 
     /**
      * true = strict validation to 17 chars
      *
      * @var bool
      */
-    protected $strict = false;
+    protected bool $strict = false;
 
     /**
-     * BirthNumber constructor.
-     *
-     * @param null|array $options
+     * @param array|Traversable|null $options
      */
-    public function __construct(array $options = [])
+    public function __construct($options = [])
     {
         if (array_key_exists('validate_cn', $options)) {
             $this->setValidateCn(boolval($options['validate_cn']));
@@ -110,9 +110,9 @@ class VehicleIdentificationNumber extends AbstractValidator
      * Returns true if and only if $value is a valid integer
      *
      * @param  string|integer $value
-     * @return boolean
+     * @return bool
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
         $result = true;
         if (!is_string($value)) {
@@ -137,8 +137,8 @@ class VehicleIdentificationNumber extends AbstractValidator
         }
 
         if (true === $result && true === $this->validateCn && 17 === $valueLength) {
-
             $currentCn = mb_substr($value, 8, 1, 'utf8');
+
             if (preg_match('~^[0-9X]{1}$~', $currentCn)) {
                 $sum = 0;
                 for ($i = 1; $i < 18; $i++) {
@@ -181,7 +181,7 @@ class VehicleIdentificationNumber extends AbstractValidator
      * @param  string $char
      * @return int|null
      */
-    protected function getCharValue($char)
+    protected function getCharValue(string $char): ?int
     {
         if (is_numeric($char)) {
             return intval($char);
@@ -196,9 +196,9 @@ class VehicleIdentificationNumber extends AbstractValidator
 
     /**
      * @param  bool|int $strict
-     * @return $this
+     * @return self
      */
-    public function setValidateCn($strict)
+    public function setValidateCn($strict): self
     {
         $this->validateCn = boolval($strict);
 
@@ -207,9 +207,9 @@ class VehicleIdentificationNumber extends AbstractValidator
 
     /**
      * @param  bool|int $strict
-     * @return $this
+     * @return self
      */
-    public function setStrict($strict)
+    public function setStrict($strict): self
     {
         $this->strict = boolval($strict);
 

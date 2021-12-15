@@ -4,13 +4,21 @@ namespace LemoBase\Validator;
 
 use Laminas\Validator\AbstractValidator;
 
+use function chr;
+use function is_int;
+use function is_string;
+use function preg_match;
+use function str_replace;
+use function str_split;
+use function strlen;
+
 class StringContains extends AbstractValidator
 {
-    const NO_ALPHA            = 'noAlpha';
-    const NO_VALID_CHARACTERS = 'noValidCharacters';
-    const NO_CAPITAL_LETTER   = 'noCapitalLetter';
-    const NO_NUMERIC          = 'noNumeric';
-    const NO_SMALL_LETTER     = 'noSmallLetter';
+    public const NO_ALPHA            = 'noAlpha';
+    public const NO_VALID_CHARACTERS = 'noValidCharacters';
+    public const NO_CAPITAL_LETTER   = 'noCapitalLetter';
+    public const NO_NUMERIC          = 'noNumeric';
+    public const NO_SMALL_LETTER     = 'noSmallLetter';
 
     /**
      * @var string|int|null
@@ -18,31 +26,12 @@ class StringContains extends AbstractValidator
      * int - 1 .. 128 ASCII characters
      */
     protected $cahracters = null;
+    protected bool $requireAlpha = false;
+    protected bool $requireCapitalLetter = false;
+    protected bool $requireNumeric = false;
+    protected bool $requireSmallLetter = false;
 
-    /**
-     * @var bool
-     */
-    protected $requireAlpha = false;
-
-    /**
-     * @var bool
-     */
-    protected $requireCapitalLetter = false;
-
-    /**
-     * @var bool
-     */
-    protected $requireNumeric = false;
-
-    /**
-     * @var bool
-     */
-    protected $requireSmallLetter = false;
-
-    /**
-     * @var array
-     */
-    protected $messageTemplates = [
+    protected array $messageTemplates = [
         self::NO_ALPHA            => 'Value must contain at least one alphabetic character',
         self::NO_VALID_CHARACTERS => 'The input contains an invalid characters',
         self::NO_CAPITAL_LETTER   => 'Value must contain at least one capital letter',
@@ -50,10 +39,9 @@ class StringContains extends AbstractValidator
         self::NO_SMALL_LETTER     => 'Value must contain at least one small letter',
     ];
 
-    public function __construct(array $options = null)
+    public function __construct($options = null)
     {
         if (null !== $options) {
-
             if (!empty($options['characters'])) {
                 if (
                     is_int($options['characters'])
@@ -93,7 +81,7 @@ class StringContains extends AbstractValidator
      * @param null  $context
      * @return bool
      */
-    public function isValid($value, $context = null)
+    public function isValid($value, $context = null): bool
     {
         $value = (string) $value;
 

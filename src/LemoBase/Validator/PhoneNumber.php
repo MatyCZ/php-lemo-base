@@ -4,27 +4,28 @@ namespace LemoBase\Validator;
 
 use Laminas\Validator\AbstractValidator;
 
+use function array_key_exists;
+use function array_keys;
+use function is_array;
+use function is_string;
+use function preg_match;
+use function substr;
+
 class PhoneNumber extends AbstractValidator
 {
-    const INVALID                = 'phoneNumberInvalid';
-    const NO_MATCH               = 'phoneNumberNoMatch';
-    const NO_MATCH_INTERNATIONAL = 'phoneNumberNoMatchInternational';
-    const UNSUPPORTED            = 'phoneNumberUnsupported';
+    public const INVALID                = 'phoneNumberInvalid';
+    public const NO_MATCH               = 'phoneNumberNoMatch';
+    public const NO_MATCH_INTERNATIONAL = 'phoneNumberNoMatchInternational';
+    public const UNSUPPORTED            = 'phoneNumberUnsupported';
 
-    /**
-     * @var array
-     */
-    protected $messageTemplates = [
+    protected array $messageTemplates = [
         self::INVALID                => 'Invalid type given. String expected',
         self::NO_MATCH               => 'The input does not match a phone number format',
         self::NO_MATCH_INTERNATIONAL => 'The input does not match an international phone number format',
         self::UNSUPPORTED            => 'The country provided is currently unsupported',
     ];
 
-    /**
-     * @var array
-     */
-    protected $patterns = [
+    protected array $patterns = [
         'cs-CZ' => "/^(\+?420)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/",
         'sk-SK' => "/^(\+?421)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/",
     ];
@@ -39,7 +40,7 @@ class PhoneNumber extends AbstractValidator
      *
      * @var bool
      */
-    protected $strict = false;
+    protected bool $strict = false;
 
     /**
      * @param array $options
@@ -60,17 +61,17 @@ class PhoneNumber extends AbstractValidator
      * @param  array|null|string $locale
      * @return self
      */
-    public function setLocale($locale) : self
+    public function setLocale($locale): self
     {
         $this->locale = $locale;
         return $this;
     }
 
     /**
-     * @param  bool|int $strict
+     * @param  bool $strict
      * @return self
      */
-    public function setStrict(bool $strict) : self
+    public function setStrict(bool $strict): self
     {
         $this->strict = $strict;
 
@@ -79,9 +80,9 @@ class PhoneNumber extends AbstractValidator
 
     /**
      * @param  string $value
-     * @return boolean
+     * @return bool
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
         if (!is_string($value)) {
             $this->error(self::INVALID);

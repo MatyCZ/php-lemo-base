@@ -5,18 +5,23 @@ namespace LemoBase\Validator;
 use Exception;
 use Laminas\Validator\AbstractValidator;
 
+use function array_key_exists;
+use function is_int;
+use function is_string;
+use function preg_match;
+use function preg_quote;
+use function sprintf;
+use function str_pad;
+
 class IdentificationNumber extends AbstractValidator
 {
-    const INVALID = 'intInvalid';
-    const NOT_IDENTIFICATIONNUMBER = 'notIdentificationNumber';
+    public const INVALID = 'intInvalid';
+    public const NOT_IDENTIFICATIONNUMBER = 'notIdentificationNumber';
 
-    /**
-     * @var array
-     */
-    protected $messageTemplates = array(
+    protected array $messageTemplates = [
         self::INVALID => "Invalid type given. String or integer expected",
         self::NOT_IDENTIFICATIONNUMBER => "The value does not appear to be an identification number",
-    );
+    ];
 
     /**
      * Excluded regular expression patterns without delimiter
@@ -25,12 +30,13 @@ class IdentificationNumber extends AbstractValidator
      *
      * @var array
      */
-    protected $exclude = [];
+    protected array $exclude = [];
 
     /**
      * BirthNumber constructor.
      *
      * @param null|array $options
+     * @throws Exception
      */
     public function __construct(array $options = [])
     {
@@ -44,10 +50,10 @@ class IdentificationNumber extends AbstractValidator
     /**
      * Returns true if and only if $value is a valid integer
      *
-     * @param  string|integer $value
-     * @return boolean
+     * @param  string|int $value
+     * @return bool
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
         if (!is_string($value) && !is_int($value)) {
             $this->error(self::INVALID);
@@ -56,6 +62,7 @@ class IdentificationNumber extends AbstractValidator
 
         $this->setValue($value);
         $value = str_pad($value, 8, '0', STR_PAD_LEFT);
+
         if (!preg_match('~^\d{8}$~', preg_quote($value, '~'))) {
             $this->error(self::NOT_IDENTIFICATIONNUMBER);
             return false;
@@ -76,12 +83,17 @@ class IdentificationNumber extends AbstractValidator
 
         $a = $a % 11;
 
-        if ($a === 0) $c = 1;
-        elseif ($a === 10) $c = 1;
-        elseif ($a === 1) $c = 0;
-        else $c = 11 - $a;
+        if ($a === 0) {
+            $c = 1;
+        } elseif ($a === 10) {
+            $c = 1;
+        } elseif ($a === 1) {
+            $c = 0;
+        } else {
+            $c = 11 - $a;
+        }
 
-        if((int) $value[7] !== $c) {
+        if ((int) $value[7] !== $c) {
             $this->error(self::NOT_IDENTIFICATIONNUMBER);
             return false;
         }
@@ -92,10 +104,11 @@ class IdentificationNumber extends AbstractValidator
     /**
      * Set excluded patterns
      *
-     * @param  array $exclude
+     * @param array $exclude
      * @return $this
+     * @throws Exception
      */
-    public function setExclude(array $exclude)
+    public function setExclude(array $exclude): self
     {
         foreach ($exclude as $pattern) {
             $this->testPregPattern($pattern);
@@ -111,10 +124,15 @@ class IdentificationNumber extends AbstractValidator
      * @param  string $pattern
      * @throws Exception
      */
-    protected function testPregPattern($pattern)
+    protected function testPregPattern(string $pattern): void
     {
-        if (false === @preg_match('~' . $pattern . '~', null)) {
-            throw new Exception(sprintf('Invalid regular expression pattern `%s` in options', $pattern));
+        if (false === @preg_match('~' . $pattern . '~', "")) {
+            throw new Exception(
+                sprintf(
+                    'Invalid regular expression pattern `%s` in options',
+                    $pattern
+                )
+            );
         }
     }
 }

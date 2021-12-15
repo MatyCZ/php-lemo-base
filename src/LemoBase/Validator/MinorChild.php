@@ -4,32 +4,27 @@ namespace LemoBase\Validator;
 
 use Laminas\Validator\AbstractValidator;
 
+use function checkdate;
+use function is_int;
+use function is_string;
+use function preg_match;
+use function strtotime;
+
 class MinorChild extends AbstractValidator
 {
-    const INVALID         = 'intInvalid';
-    const NOT_BIRTHNUMBER = 'notBirthNumber';
-    const NOT_MINORCHILD  = 'notMinorChild';
+    public const INVALID         = 'intInvalid';
+    public const NOT_BIRTHNUMBER = 'notBirthNumber';
+    public const NOT_MINORCHILD  = 'notMinorChild';
 
-    /**
-     * @var array
-     */
-    protected $messageTemplates = [
+    protected array $messageTemplates = [
         self::INVALID         => "Invalid type given. String or integer expected",
         self::NOT_BIRTHNUMBER => "The value does not appear to be a birth number",
         self::NOT_MINORCHILD  => "The value does not appear to be a minor child",
     ];
 
-    /**
-     * @var int
-     */
-    protected $limit = 18;
+    protected int $limit = 18;
 
-    /**
-     * Set validator options
-     *
-     * @param array $options
-     */
-    public function __construct($options = [])
+    public function __construct(array $options = [])
     {
         if (array_key_exists('limit', $options)) {
             $this->setLimit($options['limit']);
@@ -40,9 +35,9 @@ class MinorChild extends AbstractValidator
 
     /**
      * @param  int $limit
-     * @return $this
+     * @return self
      */
-    public function setLimit($limit)
+    public function setLimit(int $limit): self
     {
         $this->limit = $limit;
 
@@ -52,7 +47,7 @@ class MinorChild extends AbstractValidator
     /**
      * @return int
      */
-    public function getLimit()
+    public function getLimit(): int
     {
         return $this->limit;
     }
@@ -60,10 +55,10 @@ class MinorChild extends AbstractValidator
     /**
      * Returns true if and only if $value is a valid integer
      *
-     * @param  string|integer $value
-     * @return boolean
+     * @param  string|int $value
+     * @return bool
      */
-    public function isValid($value)
+    public function isValid($value): bool
     {
         if (!is_string($value) && !is_int($value)) {
             $this->error(self::INVALID);
@@ -71,12 +66,12 @@ class MinorChild extends AbstractValidator
         }
 
         $this->setValue($value);
-        if(!preg_match('#^\s*(\d\d)(\d\d)(\d\d)(\d\d\d)(\d?)\s*$#', $value, $matches)) {
+        if (!preg_match('#^\s*(\d\d)(\d\d)(\d\d)(\d\d\d)(\d?)\s*$#', $value, $matches)) {
             $this->error(self::NOT_BIRTHNUMBER);
             return false;
         }
 
-        list(, $year, $month, $day, $ext, $c) = $matches;
+        [, $year, $month, $day, $ext, $c] = $matches;
 
         // Do roku 1954 pridelovano 9 mistne RC nelze overit
         if ($c === '') {
@@ -85,7 +80,9 @@ class MinorChild extends AbstractValidator
 
         // Kontrolni cislice
         $mod = ($year . $month . $day . $ext) % 11;
-        if ($mod === 10) $mod = 0;
+        if ($mod === 10) {
+            $mod = 0;
+        }
         if ($mod !== (int) $c) {
             $this->error(self::NOT_BIRTHNUMBER);
             return false;
@@ -95,9 +92,13 @@ class MinorChild extends AbstractValidator
         $year += $year < 54 ? 2000 : 1900;
 
         // K mesici muze byt pricteno 20, 50 nebo 70
-        if ($month > 70 && $year > 2003) $month -= 70;
-        elseif ($month > 50) $month -= 50;
-        elseif ($month > 20 && $year > 2003) $month -= 20;
+        if ($month > 70 && $year > 2003) {
+            $month -= 70;
+        } elseif ($month > 50) {
+            $month -= 50;
+        } elseif ($month > 20 && $year > 2003) {
+            $month -= 20;
+        }
 
         if (!checkdate($month, $day, $year)) {
             $this->error(self::NOT_BIRTHNUMBER);
