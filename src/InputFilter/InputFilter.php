@@ -1,6 +1,6 @@
 <?php
 
-namespace LemoBase\InputFilter;
+namespace Lemo\Base\InputFilter;
 
 use Laminas\InputFilter\BaseInputFilter;
 

@@ -1,27 +1,23 @@
 <?php
 
-namespace LemoBase\View\Helper;
+namespace Lemo\Base\View\Helper;
 
 use Laminas\View\Helper\AbstractHelper;
 
+use function array_key_exists;
+use function implode;
+use function parse_str;
+use function parse_url;
+
 class ParamsQuery extends AbstractHelper
 {
-    /**
-     * @var array
-     */
-    protected $params = array();
+    protected array $params = [];
 
-    /**
-     * __invoke
-     *
-     * @return ParamsQuery
-     */
-    public function __invoke()
+    public function __invoke(): self
     {
         $parsedUrl = parse_url($_SERVER['REQUEST_URI']);
 
-        $urlQuery = null;
-        if(isset($parsedUrl['query'])) {
+        if (isset($parsedUrl['query'])) {
             parse_str($parsedUrl['query'], $params);
 
             $this->params = $params;
@@ -30,26 +26,16 @@ class ParamsQuery extends AbstractHelper
         return $this;
     }
 
-    /**
-     * Render Query string
-     *
-     * @return string
-     */
-    public function render()
+    public function render(): string
     {
         $stringParts = array();
-        foreach($this->params as $key => $value) {
+        foreach ($this->params as $key => $value) {
             $stringParts[] = $key . '=' . $value;
         }
 
         return '?' . implode('&', $stringParts);
     }
 
-    /**
-     * Render query string
-     *
-     * @return string
-     */
     public function __toString()
     {
         return $this->render();
@@ -57,12 +43,8 @@ class ParamsQuery extends AbstractHelper
 
     /**
      * Set a named query param
-     *
-     * @param  string $name
-     * @param  string $value
-     * @return ParamsQuery
      */
-    public function set($name, $value)
+    public function set(string $name, mixed $value): self
     {
         $this->params[$name] = $value;
 
@@ -71,40 +53,33 @@ class ParamsQuery extends AbstractHelper
 
     /**
      * Retrieve a named query param
-     *
-     * @param  string $name
-     * @return string
      */
-    public function get($name)
+    public function get(string $name): mixed
     {
         if (!$this->has($name)) {
             return null;
         }
+
         return $this->params[$name];
     }
 
     /**
-     * Does the query have an param by the given name?
-     *
-     * @param  string $name
-     * @return bool
+     * Does the query have a param by the given name?
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         return array_key_exists($name, $this->params);
     }
 
     /**
      * Remove a named query param
-     *
-     * @param  string $name
-     * @return ParamsQuery
      */
-    public function remove($name)
+    public function remove(string $name): self
     {
         if (!$this->has($name)) {
             return $this;
         }
+
         unset($this->params[$name]);
 
         return $this;

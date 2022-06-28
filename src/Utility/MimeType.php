@@ -1,9 +1,13 @@
 <?php
 
-namespace LemoBase\Utility;
+namespace Lemo\Base\Utility;
+
+use function strtolower;
+use function trim;
 
 class MimeType
 {
+    /** @var array<string, string>  */
     protected array $mimeTypeToExtension = [
         'application/andrew-inset' => 'ez',
         'application/applixware' => 'aw',
@@ -990,7 +994,8 @@ class MimeType
         'x-conference/x-cooltalk' => 'ice'
     ];
 
-    protected $_extensionToMimeType = [
+    /** @var array<string, string>  */
+    protected array $extensionToMimeType = [
         '123' => 'application/vnd.lotus-1-2-3',
         '3dml' => 'text/vnd.in3d.3dml',
         '3ds' => 'image/x-3ds',
@@ -1978,9 +1983,6 @@ class MimeType
 
     /**
      * Get extension by mimetype
-     *
-     * @param string $mimeType
-     * @return string|null
      */
     public function getExtension(string $mimeType): ?string
     {
@@ -1995,9 +1997,6 @@ class MimeType
 
     /**
      * Get mimetype by extension
-     *
-     * @param string $extension
-     * @return string|null
      */
     public function getMimeType(string $extension): ?string
     {

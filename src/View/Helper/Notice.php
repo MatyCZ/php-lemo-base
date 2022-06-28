@@ -1,18 +1,12 @@
 <?php
 
-namespace LemoBase\View\Helper;
+namespace Lemo\Base\View\Helper;
 
-use Laminas\Filter\StripNewlines as FilterStripNewLines;
 use Laminas\View\Helper\AbstractHelper;
-use LemoBase\Mvc\Plugin\Notice as ControllerPluginNotice;
+use Lemo\Base\Mvc\Plugin\Notice as ControllerPluginNotice;
 
 class Notice extends AbstractHelper
 {
-    /**
-     * @var ControllerPluginNotice
-     */
-    protected $notice = null;
-
     /**
      * Append text string
      *
@@ -47,22 +41,13 @@ class Notice extends AbstractHelper
      */
     protected $translate = true;
 
-    /**
-     * Constructor
-     *
-     * @param ControllerPluginNotice $notice
-     */
-    public function __construct(ControllerPluginNotice $notice)
-    {
+    public function __construct(
+        private ControllerPluginNotice $notice
+    ) {
         $this->notice = $notice;
     }
 
-    /**
-     * Render script with notices
-     *
-     * @return string
-     */
-    public function __invoke()
+    public function __invoke(): self
     {
         return $this;
     }
@@ -72,13 +57,11 @@ class Notice extends AbstractHelper
      *
      * @return string
      */
-    public function render()
+    public function render(): string
     {
         if (false === $this->notice->hasMessages() && false === $this->notice->hasCurrentMessages()) {
             return '';
         }
-
-        $filterStripNewLines = new FilterStripNewlines();
 
         $xhtml[] = '<script type="text/javascript">';
 
@@ -91,7 +74,6 @@ class Notice extends AbstractHelper
         $this->notice->clearCurrentMessages();
 
         foreach($messages as $message) {
-
             // Prepare title
             if (!empty($message['title'])) {
                 if (is_array($message['title'])) {
@@ -137,7 +119,7 @@ class Notice extends AbstractHelper
             }
 
             // Replace
-            $message['text'] = $filterStripNewLines->filter(nl2br((string) $message['text']));
+            $message['text'] = str_replace(["\n", "\r"], '', nl2br((string) $message['text']));
 
             // Id
             if(empty($message['id'])) {

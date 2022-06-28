@@ -1,6 +1,6 @@
 <?php
 
-namespace LemoBase\Mvc\Plugin;
+namespace Lemo\Base\Mvc\Plugin;
 
 use Laminas\Form\Element\Collection;
 use Laminas\Form\FieldsetInterface;

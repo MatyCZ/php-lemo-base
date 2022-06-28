@@ -1,9 +1,5 @@
 parameters:
-  checkGenericClassInNonGenericObjectType: false
-  checkMissingIterableValueType: false
   editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
-  ignoreErrors:
-    - '#Call to an undefined method Laminas\\Console\\Request::getFiles\(\)#'
-  level: 6
+  level: 5
   paths:
     - src/
