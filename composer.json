@@ -14,7 +14,6 @@
         }
     },
     "require": {
-        "laminas/laminas-dependency-plugin": "^2.0",
         "laminas/laminas-form": "^3.0",
         "laminas/laminas-inputfilter": "^2.18",
         "laminas/laminas-mvc": "^3.0",
